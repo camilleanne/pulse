@@ -7,9 +7,9 @@ Based on techniques outlined in ["Non-contact, automated cardiac pulse measureme
 
 TO DO:
 ===========
-*Extract green channel from tracked forehead area
-*Implement independent component analysis (ICA) on average green pixels over time
-*Apply Fast Fourier Transform (FFT)
-*Extract heartrate
-*Build web application
-*optimize, optimize, optimize
+*  Extract green channel from tracked forehead area
+*  Implement independent component analysis (ICA) on average green pixels over time
+*  Apply Fast Fourier Transform (FFT)
+*  Extract heartrate
+*  Build web application
+*  optimize, optimize, optimize
