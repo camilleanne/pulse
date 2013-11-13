@@ -1,56 +1,61 @@
 var camera = (function(){
   var video, canvas, context, videoPause, overlayContext;
+  var renderTImer;
+  var width = 640;
+  var height = 480;
+  var fps = 15;
+  var greenTimeSeries = [];
+  var fft, spectrum, spectrum2, rfft;
+  var normalized;
+  var freq, heartrate;
 
   function initVideoStream(){
     // videoPause = false;
     video = document.createElement("video");
-    video.setAttribute('width', 640);
-    video.setAttribute('height', 480);
-    // vid.appendChild(video); //when using facetrackr this must be commented out
+    video.setAttribute('width', width);
+    video.setAttribute('height', height);
     var cameraExists = false;
 
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
-  
     if (navigator.getUserMedia){
       navigator.getUserMedia({
-        video:true
+        video: true,
+        audio: false
       }, function(stream){
-        video.src = window.URL.createObjectURL(stream); 
-        initCanvas();
+        if (video.mozSrcObject !== undefined) { // for Firefox
+          video.mozSrcObject = stream;
+        } else {
+          video.src = window.URL.createObjectURL(stream); 
+        } initCanvas();
       }, errorCallback);
-      
-    };
+      };
   };
 
+  canvas = document.createElement("canvas");
   function initCanvas(){
-    canvas = document.createElement("canvas");
-    canvas.setAttribute('width', 640);
-    canvas.setAttribute('height', 480);
+    canvas.setAttribute('width', width);
+    canvas.setAttribute('height', height);
     context = canvas.getContext("2d");
-    // context.fillStyle = "rgb(200,0,0)";
-    // context.fill();
 
     canvasOverlay = document.createElement("canvas");
-    canvasOverlay.setAttribute('width', 640);
-    canvasOverlay.setAttribute('height', 480);
+    canvasOverlay.setAttribute('width', width);
+    canvasOverlay.setAttribute('height', height);
     canvasOverlay.style.position = "absolute";
     canvasOverlay.style.top = '0px';
     canvasOverlay.style.zIndex = '100001';
     canvasOverlay.style.display = 'block';
     overlayContext = canvasOverlay.getContext('2d');
-    overlayContext.clearRect(0,0,640,480);
+    overlayContext.clearRect(0,0,width,height);
 
-    // this needs to be changed to draw the video on the canvas instead of appending
     vid.appendChild(canvas);
     vid.appendChild(canvasOverlay)
 
-
     startCapture();
 
-
   };
+
   // for facetracking
   function headtrack (){
       var htracker = new headtrackr.Tracker();
@@ -62,13 +67,15 @@ var camera = (function(){
       document.addEventListener("facetrackingEvent", greenRect)
 
   };
+
   // for facetracking, draws the rectangle on the canvas
   function greenRect(event) {
         // clear canvas
-        overlayContext.clearRect(0,0,640,480);
+        overlayContext.clearRect(0,0,width,height);
 
         var sx, sy, sw, sh, forehead, inpos, outpos;
-        
+        var greenSum = 0;
+        var normalized = [];
         //approximating forehead based on facetracking
         sx = event.x + (-(event.width/5)) >> 0;
         sy = event.y + (-(event.height/3)) >> 0;
@@ -82,11 +89,11 @@ var camera = (function(){
         //CS == camshift (in headtrackr.js)
         // once we have stable tracking, draw rectangle
         if (event.detection == "CS") {
-          """ 
-          translate moves the origin point of context by event.x and event.y
-          ex. (88, 120) becomes the new (0, 0), removing translating for 
-          the moment and adding (event.x + or event.y + ) where needed for now
-          """
+          // Notes: 
+          // translate moves the origin point of context by event.x and event.y
+          // ex. (88, 120) becomes the new (0, 0), removing translating for 
+          // the moment and adding (event.x + or event.y + ) where needed for now
+
           // overlayContext.translate(event.x, event.y)
 
           overlayContext.rotate(event.angle-(Math.PI/2));
@@ -102,15 +109,14 @@ var camera = (function(){
           // overlayContext.fillStyle = "rgba(200, 0, 0, 1)";
           // overlayContext.fillRect(sx, sy, sw, sh);
           
-          """
-          forehead video box:
-          current theory is that the video brings in images at ~130dpi (@ 320 x 240), 
-          whereas the canvas is 72dpi, thus the .545 or 1.85 difference
-          this isn't perfect, something about the way it calculates, 
-          there is still an offset image sometimes. 
-          Constraints will allow a specific resolution (theoretically), will require testing.
-          This currently only works for the iSight in a MacBook Air
-          """
+          // Notes: forehead video box --
+          // current theory is that the video brings in images at ~130dpi (@ 320 x 240), 
+          // whereas the canvas is 72dpi, thus the .545 or 1.85 difference
+          // this isn't perfect, something about the way it calculates, 
+          // there is still an offset image sometimes. 
+          // Constraints will allow a specific resolution (theoretically), will require testing.
+          // This currently only works for the iSight in a MacBook Air
+        
           // ** for 320 x 240
           // overlayContext.drawImage(video, event.x + (sx* .8334), sy * 1.8334, sw*1.8334, sh*1.8334, sx, sy, sw, sh);
 
@@ -132,11 +138,43 @@ var camera = (function(){
             // var alpha = forehead.data[i+3];
             forehead.data[i] = 0;
             forehead.data[i+2] = 0;
+
+            //get sum of green area for each frame
+            greenSum = forehead.data[i+1] + greenSum;
           }
 
+          //get average of green area for each frame
+          var average = greenSum/forehead.data.length;
+          console.log("Average: ", average);
+
+          //create an array of averages for last 30 seconds
+          //normalize
+          if (greenTimeSeries.length < 256){
+            greenTimeSeries.push(average);
+          } else {
+            greenTimeSeries.push(average);
+            greenTimeSeries.shift();
+            
+
+            normalized = normalize(greenTimeSeries);
+
+            // fast fourier transform from dsp.js
+            fft = new RFFT(256, 15);
+            fft.forward(normalized);
+            spectrum = fft.spectrum;
+
+            freq = frequencyExtract(spectrum, fps);
+            console.log(freq)
+
+            //this should be moved, it should not be in this loop, but outside running every second or so
+            heartrate = freq * 60;
+            console.log(heartrate)
+
+          }
+          // console.log("FFT: ",spectrum);
+          console.log(heartrate)
+
           overlayContext.putImageData(forehead, sx, sy);
-          console.log(forehead.data)     
-          console.log(overlayContext.getImageData(sx, sy, sw, sh).data)
 
           overlayContext.rotate((Math.PI/2)-event.angle);
           
@@ -144,23 +182,31 @@ var camera = (function(){
           // overlayContext.translate(-event.x, -event.y);
 
         }
-        // for debugging framerates, divide average logged # by 1000 (in ms)
-        var newTime = new Date();
-        var elapsedTime = newTime - lastTime;
-        lastTime = newTime;
-        console.log(elapsedTime); // to do: try sending this to the DOM
+        // for debugging framerates
+        // var newTime = new Date();
+        // var elapsedTime = newTime - lastTime;
+        // lastTime = newTime;
+        // console.log(1000/elapsedTime); // to do: try sending this to the DOM
+
 
    };
 
    var lastTime;
 
+  
   function startCapture(){
     cameraExists = true;
     video.play();
+
+    renderTimer = setInterval(function(){
+        context.drawImage(video, 0, 0, width, height);
+      }, Math.round(1000 / fps));
+
     headtrack();
   };
 
   function pauseCapture(){
+    if (renderTimer) clearInterval(renderTimer);
     video.pause();
 
     //removes the event listener and stops headtracking
