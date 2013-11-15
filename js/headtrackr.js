@@ -145,7 +145,7 @@ headtrackr.Tracker = function(params) {
 		}
 	}
 	
-	this.init = function(video, canvas) {
+	this.init = function(video, canvas, context) {
 		// if (!camera.cameraExists){
 		// 	console.log(camera.cameraExists+"ht")
 
@@ -193,7 +193,7 @@ headtrackr.Tracker = function(params) {
 			// console.log('else');
 		videoElement = video;
 		canvasElement = canvas;
-		canvasContext = canvas.getContext("2d");
+		canvasContext = context;
 		
 		// resize video when it is playing
 		video.addEventListener('playing', function() {
@@ -218,6 +218,9 @@ headtrackr.Tracker = function(params) {
 	// }
 	
 	track = function() {
+		if (run) {
+			detector = window.setTimeout(track, params.detectionInterval);
+		}
 		// Copy video to canvas
 		
 		// canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
@@ -352,9 +355,7 @@ headtrackr.Tracker = function(params) {
 			}
 		}
 	 
-		if (run) {
-			detector = window.setTimeout(track, params.detectionInterval);
-		}
+
 	}.bind(this);
 	
 	var starter = function() {
@@ -362,20 +363,20 @@ headtrackr.Tracker = function(params) {
 		
 		// sometimes canvasContext is not available yet, so try and catch if it's not there...
 		try {
-      canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-      
-      // in some cases, the video sends events before starting to draw
-      // so check that we have something on video before starting to track
-      var canvasContent = headtrackr.getWhitebalance(canvasElement);
-      if (canvasContent > 0) {
-        run = true;
-        track();
-      } else {
-        window.setTimeout(starter, 100);
-      }
-    } catch (err) {
-      window.setTimeout(starter, 100);
-    }
+	      canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+	      
+	      // in some cases, the video sends events before starting to draw
+	      // so check that we have something on video before starting to track
+	      var canvasContent = headtrackr.getWhitebalance(canvasElement);
+	      if (canvasContent > 0) {
+	        run = true;
+	        track();
+	      } else {
+	        window.setTimeout(starter, 100);
+	      }
+	    } catch (err) {
+	      window.setTimeout(starter, 100);
+	    }
 	}
 	
 	this.start = function() {
@@ -1039,6 +1040,7 @@ headtrackr.camshift.Moments = function(data, x, y, w, h, second) {
   var i, j, val, vx, vy;
   var a = [];
   for (i = x; i < w; i++) {
+    // a = _pdf[i];
     a = data[i];
     vx = i-x;
     
@@ -1096,19 +1098,27 @@ headtrackr.camshift.Rectangle = function(x,y,w,h) {
  *
  * @constructor
  */
-headtrackr.camshift.Tracker = function(params) {
+headtrackr.camshift.Tracker = function(params, inputcanvas) {
   
   if (params === undefined) params = {};
   if (params.calcAngles === undefined) params.calcAngles = true;
   
   var _modelHist,
     _curHist, //current histogram
-    _pdf, // pixel probability data for current searchwindow
+    // _pdf, // pixel probability data for current searchwindow
     _searchWindow, // rectangle where we are searching
     _trackObj, // object holding data about where current tracked object is
     _canvasCtx, // canvas context for initial canvas
     _canvasw, // canvas width for tracking canvas
     _canvash; // canvas height for tracking canvas
+
+
+  // var _pdf = new Array(inputcanvas.width);
+  var _pdf = [];
+  // for (var i = 0; i < inputcanvas.width; i ++){ _pdf[i] = []; };
+  // console.log("pdf: ",_pdf)
+  // console.log("width: ", inputcanvas.width)
+  // console.log("height: ", inputcanvas.height)
   
   this.getSearchWindow = function() {
     // return the search window used by the camshift algorithm in the current analysed image
@@ -1296,11 +1306,14 @@ headtrackr.camshift.Tracker = function(params) {
         r = imgData[pos] >> 4;
         g = imgData[pos+1] >> 4;
         b = imgData[pos+2] >> 4;
+        // _pdf[x][y] = (weights[[256 * r + 16 * g + b]])
         a.push(weights[256 * r + 16 * g + b]);
       }
       data[x] = a;
     }
     return data;
+    // return _pdf
+    // console.log(_pdf)
   }
 };
 
@@ -1390,7 +1403,7 @@ headtrackr.facetrackr.Tracker = function(params) {
   this.init = function(inputcanvas) {
     _inputcanvas = inputcanvas
     // initialize cs tracker
-    _cstracker = new headtrackr.camshift.Tracker({calcAngles : params.calcAngles});
+    _cstracker = new headtrackr.camshift.Tracker({calcAngles : params.calcAngles}, inputcanvas);
   }
   
   this.track = function() {
