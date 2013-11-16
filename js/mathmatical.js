@@ -25,7 +25,6 @@ function normalize(array){
 };
 
 function frequencyExtract(fftArray, framerate){
-
 	// Return the Discrete Fourier Transform sample frequencies.
 	// returns the center of the FFT bins
 	// blantantly ripped from numpy.fft.fftfreq(), but ported by JS by yours truly
@@ -39,9 +38,11 @@ function frequencyExtract(fftArray, framerate){
 	//4. calculate the magnitude for each component (sq.root(real^2 + imaginary^2))
 	//5. calculate (FFT size/2+1) values of frequency from 0 to Nyquist with a step of delta f
 
-	var val, n, d, results, N;
-	var p1, p2, results, freqs;
-	p1 = p2 = results = freqs = [];
+	var val, n, d, N;
+	var p1 = [];
+	var p2 = [];
+	var results = [];
+	var freqs = [];
 
 
 	//from numpy.fft.fftfreq doc: "Sample spacing (inverse of the sampling rate). Defaults to 1. For instance, if the sample spacing is in seconds, then the frequency unit is cycles/second."
@@ -54,12 +55,13 @@ function frequencyExtract(fftArray, framerate){
 	N = ((n - 1)/2 + 1) >> 0;
 
 	for (var i = 0; i < N; i++){ p1.push(i) }
-	results = p1.concat(results)
+
 	for (var i = (-(n/2) >> 0); i < 0; i++) { p2.push(i) }
-	results = results.concat(p2)
+	
+	results = p1.concat(p2)
 
 	freqs = results.map( function(i){ return i * val })
-	// console.log("freqs: ", freqs)
+	console.log("freqs: ", freqs)
 
 	return filterFreq(fftArray, freqs, framerate);
  }
@@ -68,7 +70,7 @@ function filterFreq(fftArray, freqs, framerate){
 	// calculates the power spectra and returns 
 	// the frequency, in Hz, of the most prominent 
 	// frequency between 0.75 Hz and 3.3333 Hz (45 - 200 bpm)
-	console.log(freqs)
+	// console.log(freqs)
 	var filteredFFT = [];
 	var filteredFreqBin = [];
 
