@@ -40,9 +40,8 @@ function frequencyExtract(fftArray, framerate){
 	//5. calculate (FFT size/2+1) values of frequency from 0 to Nyquist with a step of delta f
 
 	var val, n, d, results, N;
-	var p1 = [];
-	var p2 = [];
-	var freqs = [];
+	var p1, p2, results, freqs;
+	p1 = p2 = results = freqs = [];
 
 
 	//from numpy.fft.fftfreq doc: "Sample spacing (inverse of the sampling rate). Defaults to 1. For instance, if the sample spacing is in seconds, then the frequency unit is cycles/second."
@@ -53,17 +52,16 @@ function frequencyExtract(fftArray, framerate){
 
 	val = 1.0/(n * d);
 	N = ((n - 1)/2 + 1) >> 0;
-	// console.log("N: ", n)
-	results = new Array(n);
-	for (var i = 0; i < N; i++){ p1.push(i) };
-	results = p1.concat(results.slice(0, N));
+
+	for (var i = 0; i < N; i++){ p1.push(i) }
+	results = p1.concat(results)
 	for (var i = (-(n/2) >> 0); i < 0; i++) { p2.push(i) }
-	results = (results.slice(0,N)).concat(p2);
+	results = results.concat(p2)
+
 	freqs = results.map( function(i){ return i * val })
 	// console.log("freqs: ", freqs)
-	
-	return filterFreq(fftArray, freqs, framerate);
 
+	return filterFreq(fftArray, freqs, framerate);
  }
 
 function filterFreq(fftArray, freqs, framerate){
