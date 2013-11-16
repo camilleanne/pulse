@@ -25,58 +25,70 @@ function normalize(array){
 };
 
 function frequencyExtract(fftArray, framerate){
+
 	// Return the Discrete Fourier Transform sample frequencies.
 	// returns the center of the FFT bins
 	// blantantly ripped from numpy.fft.fftfreq(), but ported by JS by yours truly
 	// could probably be optimized a bit
 	
+
+	//1. keep the first (FFT size/2 + 1) elements, truncate the rest
+	//2. scale -- divide all elements by FFT size
+	//3. fold -- leave the first element and the last unchanged and multiply all
+	// other elements by 2
+	//4. calculate the magnitude for each component (sq.root(real^2 + imaginary^2))
+	//5. calculate (FFT size/2+1) values of frequency from 0 to Nyquist with a step of delta f
+
 	var val, n, d, results, N;
 	var p1 = [];
 	var p2 = [];
 	var freqs = [];
 
+
+	//from numpy.fft.fftfreq doc: "Sample spacing (inverse of the sampling rate). Defaults to 1. For instance, if the sample spacing is in seconds, then the frequency unit is cycles/second."
+	// if my frequency is 15 fps, or 15 Hz, or every 66ms, then the sample spacing is .066 seconds (1/15)
+
 	n = fftArray.length;
-	d = 1.0;
+	d = 1.0/framerate;
 
 	val = 1.0/(n * d);
-	results = new Array(n);
 	N = ((n - 1)/2 + 1) >> 0;
+	// console.log("N: ", n)
+	results = new Array(n);
 	for (var i = 0; i < N; i++){ p1.push(i) };
 	results = p1.concat(results.slice(0, N));
-	for (var i = (-(n/2) >> 0); i < 0; i++) { p2.push(i) };
+	for (var i = (-(n/2) >> 0); i < 0; i++) { p2.push(i) }
 	results = (results.slice(0,N)).concat(p2);
-	freqs = results.map( function(i){ return i * val });
-	// console.log("freqs: ",freqs)
-
+	freqs = results.map( function(i){ return i * val })
+	// console.log("freqs: ", freqs)
+	
 	return filterFreq(fftArray, freqs, framerate);
-}
+
+ }
 
 function filterFreq(fftArray, freqs, framerate){
 	// calculates the power spectra and returns 
 	// the frequency, in Hz, of the most prominent 
-	// frequency between 0.4 Hz and 4 Hz (45 - 240 bpm)
+	// frequency between 0.75 Hz and 3.3333 Hz (45 - 200 bpm)
+	console.log(freqs)
+	var filteredFFT = [];
+	var filteredFreqBin = [];
 
-	var filtered = [];
 	var freqObj = _.object(freqs, fftArray);
-
 	for (freq in freqObj){
-		if ((freq > 0.4) && (freq < 4.0)){
-			filtered.push(freqObj[freq]);
+		if ((freq > 0.75) && (freq < 3.333)){
+			filteredFFT.push(freqObj[freq]);
+			filteredFreqBin.push(freq);
 		}
 	}
-	// console.log('filtered: ',filtered)
-	var fft_power =  filtered.map(function(i) {return Math.pow(Math.abs(i), 2)});
-	// console.log('fft_power: ', fft_power)
-	var idx = _.indexOf(fft_power, _.max(fft_power));
-	// console.log('idx: ', idx)
+	var normalizedFreqs = filteredFFT.map(function(i) {return Math.pow(Math.abs(i), 2)});
 
-	var freq = freqs[idx]
-	// console.log('freq: ', freq)
-	var freq_in_hertz = Math.abs(freq * framerate)
-	// console.log('freq_in_hertz: ', freq_in_hertz)
+	var idx = _.indexOf(normalizedFreqs, _.max(normalizedFreqs));
 
-	// return cardiac(freq_in_hertz)
+	var freq_in_hertz = filteredFreqBin[idx]
+	// console.log('freq: ', freq_in_hertz)
 	return freq_in_hertz
+
 }
 
 function cardiac(freq_in_hertz){
