@@ -61,7 +61,7 @@ function frequencyExtract(fftArray, framerate){
 	results = p1.concat(p2)
 
 	freqs = results.map( function(i){ return i * val })
-	console.log("freqs: ", freqs)
+	// console.log("freqs: ", freqs)
 
 	return filterFreq(fftArray, freqs, framerate);
  }

@@ -1,12 +1,26 @@
-<html>
+<!DOCTYPE html>
+<html lang='en'>
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <title>Index</title>  
+  	<meta charset="utf-8" />
+    <title>Heartbeat machine</title>  
+    <style>
+    	#vid {
+    		clear: both;
+    	}
+
+    	#countdown{
+    		float: left;
+    	}
+    </style>
   </head>
 <body>
   <!-- <button id="start_camera" name="start_camera">Start Camera</button> -->
   <div id="vid"></div>
+  <div id="countdownDiv"></div>
+  <div id="hrCounter"></div>
+
   <button id="end_camera" name="end_camera">Pause/Resume Camera</button>
+  <div id="data"></div>
 
 <script src="js/underscore-min.js"></script>
 <script src="js/mathmatical.js"></script>
@@ -19,3 +33,8 @@
 </body>
 
 </html>
+
+
+
+
+
