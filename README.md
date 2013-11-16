@@ -17,6 +17,6 @@ TO DO:
 *  Extract green channel from tracked forehead area - DONE 11/10
 *  Implement independent component analysis (ICA) on average green pixels over time - Shelved for now (11/13)
 *  Apply Fast Fourier Transform (FFT) - DONE 11/11
-*  Extract heartrate - Partially completed 11/12
+*  Extract heartrate - Complete 11/14 (fixing frequency binning limitations)
 *  Build web application
 *  optimize, optimize, optimize
