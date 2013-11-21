@@ -14,6 +14,9 @@
     </style>
   </head>
 <body>
+	{% for message in get_flashed_messages() %}
+        <li>{{ message }}</li>
+    {% endfor %}
   <!-- <button id="start_camera" name="start_camera">Start Camera</button> -->
   <div id="vid"></div>
   <div id="countdownDiv"></div>
@@ -23,6 +26,7 @@
   <div id="data"></div>
 
 <script src="/static/js/underscore-min.js"></script>
+<script src="static/js/websocket.js"></script>
 <script src="/static/js/mathmatical.js"></script>
 <script src="/static/js/camera.js"></script>
 <script src="/static/js/headtrackr.js"></script>

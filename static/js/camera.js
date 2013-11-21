@@ -10,8 +10,9 @@ var camera = (function(){
   var heartrate;
   var heartrateArray = [];
   var lastTime;
-  var bufferWindow = 1024;
+  var bufferWindow = 256;
   var countdown = false;
+  var rgbMatrix = [[],[],[]];
 
   function initVideoStream(){
     // videoPause = false;
@@ -63,8 +64,8 @@ var camera = (function(){
     countdownContext.clearRect(0,0,width,height);
 
     vid.appendChild(canvas);
-    vid.appendChild(canvasOverlay)
-    countdownDiv.appendChild(countdownCanvas)
+    vid.appendChild(canvasOverlay);
+    countdownDiv.appendChild(countdownCanvas);
 
     startCapture();
 
@@ -96,6 +97,8 @@ var camera = (function(){
 
     var sx, sy, sw, sh, forehead, inpos, outpos;
     var greenSum = 0;
+    var redSum = 0;
+    var blueSum = 0;
     var normalized = [];
     
     //approximating forehead based on facetracking
@@ -141,16 +144,36 @@ var camera = (function(){
         // var green = forehead.data[i+1];
         // var blue = forehead.data[i+2];
         // var alpha = forehead.data[i+3];
+        
         // for putting a green video image on screen
-        forehead.data[i] = 0;
-        forehead.data[i+2] = 0;
+        // forehead.data[i] = 0;
+        // forehead.data[i+2] = 0;
 
         //get sum of green area for each frame
         greenSum = forehead.data[i+1] + greenSum;
-      }
+        redSum = forehead.data[i] + redSum;
+        blueSum = forehead.data[i+2] + blueSum;
+      };
 
       //get average of green area for each frame
       var average = greenSum/forehead.data.length;
+      var redAverage = redSum/forehead.data.length;
+      var blueAverage = blueSum/forehead.data.length;
+
+      if (rgbMatrix[0].length < bufferWindow){
+        rgbMatrix[0].push(redAverage);
+        rgbMatrix[1].push(average);
+        rgbMatrix[2].push(blueAverage);
+      } else {
+        rgbMatrix[0].push(redAverage);
+        rgbMatrix[0].shift();
+        rgbMatrix[1].push(average);
+        rgbMatrix[1].shift();
+        rgbMatrix[2].push(blueAverage);
+        rgbMatrix[2].shift();
+      }
+
+
       
       //create an array of averages for last 30 seconds
       // if (greenTimeSeries.length < bufferWindow){
@@ -195,7 +218,7 @@ var camera = (function(){
       //   drawCountdown(greenTimeSeries);
       // };
 
-      overlayContext.putImageData(forehead, sx, sy);
+      // overlayContext.putImageData(forehead, sx, sy);
       overlayContext.rotate((Math.PI/2)-event.angle); //**
       
       // see note above about .translate()
@@ -236,16 +259,19 @@ var camera = (function(){
     // console.log("peak freq in hz:", freq)
 
     heartrate = freq * 60;
-    console.log("heartrate: ", heartrate)
+    console.log("heartrate: ", heartrate);
 
     heartrateArray.push(heartrate)
+    if (rgbMatrix[1].length == bufferWindow){
+      sendData(rgbMatrix);
+    };
 
     //draw heartbeat to page
     countdownContext.font = "20pt Helvetica";
     countdownContext.clearRect(0,0,200,100);
-    countdownContext.save()
-    countdownContext.fillText(heartrate >> 0, 25, 25)
-    countdownContext.restore()
+    countdownContext.save();
+    countdownContext.fillText(heartrate >> 0, 25, 25);
+    countdownContext.restore();
 
   };
   
@@ -271,7 +297,8 @@ var camera = (function(){
     document.removeEventListener("facetrackingEvent", greenRect);
     htracker.stop();
 
-    console.log(heartrateArray)
+    console.log(heartrateArray);
+    console.log(rgbMatrix);
 
 
   };
