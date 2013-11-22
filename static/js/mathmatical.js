@@ -91,6 +91,6 @@ function filterFreq(fftArray, freqs, framerate){
 
 }
 
-function cardiac(freq_in_hertz){
-	return freq_in_hertz * 60;
-}
+// function cardiac(freq_in_hertz){
+// 	return freq_in_hertz * 60;
+// }

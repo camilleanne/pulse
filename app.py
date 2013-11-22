@@ -16,9 +16,9 @@ def echo_socket(ws):
 		# if len(message) <= 4:
 		# 	buffer_window = message
 		# else:
-		signals = model.parse_RGB(message, 256)
+		signals = model.parse_RGB(message, 1024)
 		ws.send(signals)
-		ws.send("received")
+		# ws.send("received")
 		# print message
 		# flash(message)
 

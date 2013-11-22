@@ -10,7 +10,7 @@ var camera = (function(){
   var heartrate;
   var heartrateArray = [];
   var lastTime;
-  var bufferWindow = 256;
+  var bufferWindow = 1024;
   var countdown = false;
   var rgbMatrix = [[],[],[]];
 
@@ -28,7 +28,6 @@ var camera = (function(){
     if (navigator.getUserMedia){
       navigator.getUserMedia({
         video: true,
-        // video: {mandatory: {frameRate: 15}}
         audio: false
       }, function(stream){
         if (video.mozSrcObject !== undefined) { // for Firefox
@@ -50,7 +49,7 @@ var camera = (function(){
     canvasOverlay.setAttribute('width', width);
     canvasOverlay.setAttribute('height', height);
     canvasOverlay.style.position = "absolute";
-    canvasOverlay.style.top = '8px';
+    canvasOverlay.style.top = '0';
     canvasOverlay.style.zIndex = '100001';
     canvasOverlay.style.display = 'block';
     overlayContext = canvasOverlay.getContext('2d');
@@ -172,7 +171,9 @@ var camera = (function(){
         rgbMatrix[2].push(blueAverage);
         rgbMatrix[2].shift();
       }
-
+      if (rgbMatrix[1].length == bufferWindow){
+        sendData(rgbMatrix);
+      };
 
       
       //create an array of averages for last 30 seconds
@@ -190,29 +191,29 @@ var camera = (function(){
       // }
 
       // messy cascade for refinement of heartrate/frequency bins over time as more data becomes available
-      if (greenTimeSeries.length < (bufferWindow/8)){
-        greenTimeSeries.push(average);
-        countdown = true;
+      // if (greenTimeSeries.length < (bufferWindow/8)){
+      //   greenTimeSeries.push(average);
+      //   countdown = true;
 
-      } else if (greenTimeSeries.length < (bufferWindow/4)){
-        greenTimeSeries.push(average);
-        cardiac(greenTimeSeries.slice((greenTimeSeries.length - bufferWindow/8)), bufferWindow/8);
+      // } else if (greenTimeSeries.length < (bufferWindow/4)){
+      //   greenTimeSeries.push(average);
+      //   cardiac(greenTimeSeries.slice((greenTimeSeries.length - bufferWindow/8)), bufferWindow/8);
 
-      } else if (greenTimeSeries.length < (bufferWindow/2)){
-        greenTimeSeries.push(average);
-        cardiac(greenTimeSeries.slice((greenTimeSeries.length - bufferWindow/4)), bufferWindow/4);
+      // } else if (greenTimeSeries.length < (bufferWindow/2)){
+      //   greenTimeSeries.push(average);
+      //   cardiac(greenTimeSeries.slice((greenTimeSeries.length - bufferWindow/4)), bufferWindow/4);
 
-      } else if (greenTimeSeries.length < bufferWindow) {
-        greenTimeSeries.push(average);
-        cardiac(greenTimeSeries.slice((greenTimeSeries.length - bufferWindow/2)), bufferWindow/2);
+      // } else if (greenTimeSeries.length < bufferWindow) {
+      //   greenTimeSeries.push(average);
+      //   cardiac(greenTimeSeries.slice((greenTimeSeries.length - bufferWindow/2)), bufferWindow/2);
       
-      } else {
-        greenTimeSeries.push(average);
-        greenTimeSeries.shift();
+      // } else {
+      //   greenTimeSeries.push(average);
+      //   greenTimeSeries.shift();
 
-        countdown = false;
-        cardiac(greenTimeSeries, bufferWindow);
-      }
+      //   countdown = false;
+      //   cardiac(greenTimeSeries, bufferWindow);
+      // }
 
       // if (countdown == true){
       //   drawCountdown(greenTimeSeries);
@@ -245,10 +246,11 @@ var camera = (function(){
   function cardiac(averagePixelArray, bfwindow){
     // static test fft spectrum data:
     // var fftArray = [0, 0.6082253456115723, 0.25601473450660706, 0.3510543704032898, 0.33191803097724915, 0.40043285489082336, 0.24442104995250702, 0.2906903624534607, 0.10941631346940994, 0.22052565217018127, 0.08654522150754929, 0.11624716222286224, 0.17962567508220673, 0.10583585500717163, 0.14719387888908386, 0.1313147246837616, 0.06234072521328926, 0.1543150544166565, 0.11760584264993668, 0.11862088739871979, 0.12146361917257309, 0.266795814037323, 0.21472491323947906, 0.06073959171772003, 0.06288193166255951, 0.09347641468048096, 0.036240000277757645, 0.05102884769439697, 0.04235406965017319, 0.02831820584833622, 0.05210259556770325, 0.10648924112319946, 0.15421639382839203, 0.06438228487968445, 0.10806077718734741, 0.03795776888728142, 0.08309036493301392, 0.031337834894657135, 0.09866298735141754, 0.014706060290336609, 0.03916962072253227, 0.08954672515392303, 0.029007576406002045, 0.057937536388635635, 0.008652705699205399, 0.037266805768013, 0.02773413620889187, 0.06986536830663681, 0.003169334027916193, 0.11411335319280624, 0.08028649538755417, 0.023082412779331207, 0.07458089292049408, 0.035777997225522995, 0.03824623301625252, 0.049640655517578125, 0.077757328748703, 0.034727200865745544, 0.04745856299996376, 0.023465096950531006, 0.024489138275384903, 0.07100922614336014, 0.040082309395074844, 0.05462462082505226, 0.018537191674113274, 0.022122405469417572, 0.07421161979436874, 0.030828898772597313, 0.015992337837815285, 0.041366539895534515, 0.022134358063340187, 0.04682140797376633, 0.04059939831495285, 0.03882011026144028, 0.03683715686202049, 0.0355040617287159, 0.04130915179848671, 0.0772508755326271, 0.017217449843883514, 0.04906228929758072, 0.05653959885239601, 0.03592155873775482, 0.05430029705166817, 0.08023825287818909, 0.021106261759996414, 0.015047682449221611, 0.025425495579838753, 0.01588442362844944, 0.010336599312722683, 0.04358170926570892, 0.03919610008597374, 0.059951890259981155, 0.0548163503408432, 0.0708637610077858, 0.05006611347198486, 0.0253529604524374, 0.024189390242099762, 0.04341737926006317, 0.021617475897073746, 0.023999590426683426, 0.03697226196527481, 0.04166150838136673, 0.048380929976701736, 0.023121561855077744, 0.028621751815080643, 0.02181928977370262, 0.06232449412345886, 0.003735166508704424, 0.056197550147771835, 0.007498697843402624, 0.026589369401335716, 0.036785390228033066, 0.06052883714437485, 0.02696179784834385, 0.06407647579908371, 0.07175770401954651, 0.04474520683288574, 0.05206694453954697, 0.0502486452460289, 0.04056066647171974, 0.04000169411301613, 0.029190203174948692, 0.0447375625371933, 0.05608018860220909, 0.04813564941287041, 0.04150288179516792, 0.03023460879921913, 0.013040808029472828]
-
+    // console.log(averagePixelArray)
     var normalized = normalize(averagePixelArray);
 
     // fast fourier transform from dsp.js
+    
     var fft = new RFFT(bfwindow, fps);
     fft.forward(normalized);
     var spectrum = fft.spectrum;
@@ -259,12 +261,9 @@ var camera = (function(){
     // console.log("peak freq in hz:", freq)
 
     heartrate = freq * 60;
-    console.log("heartrate: ", heartrate);
+    // console.log("heartrate: ", heartrate);
 
     heartrateArray.push(heartrate)
-    if (rgbMatrix[1].length == bufferWindow){
-      sendData(rgbMatrix);
-    };
 
     //draw heartbeat to page
     countdownContext.font = "20pt Helvetica";
@@ -297,8 +296,8 @@ var camera = (function(){
     document.removeEventListener("facetrackingEvent", greenRect);
     htracker.stop();
 
-    console.log(heartrateArray);
-    console.log(rgbMatrix);
+    // console.log(heartrateArray);
+    // console.log(rgbMatrix);
 
 
   };
@@ -312,6 +311,7 @@ var camera = (function(){
     },
     start: startCapture,
     pause: pauseCapture,
+    cardiac: cardiac,
   }
 
 })();
