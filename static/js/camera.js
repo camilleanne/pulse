@@ -6,21 +6,22 @@ var camera = (function(){
   var width = 480;
   var height = 360;
   var fps = 15;
-  var greenTimeSeries = [];
   var heartrate;
   var heartrateArray = [];
   var lastTime;
   var bufferWindow = 1024;
+  var workingBuffer;
   var countdown = false;
-  var rgbMatrix = [[],[],[]];
+  // var rgbMatrix = [[],[],[]];
+  var red = [];
+  var green = [];
+  var blue = [];
+  var pause = false;
 
   function initVideoStream(){
-    // videoPause = false;
     video = document.createElement("video");
     video.setAttribute('width', width);
     video.setAttribute('height', height);
-    // window.video = video;
-    var cameraExists = false;
 
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
@@ -131,8 +132,8 @@ var camera = (function(){
         // forehead.data[i+2] = 0;
 
         //get sum of green area for each frame
-        greenSum = forehead.data[i+1] + greenSum;
         redSum = forehead.data[i] + redSum;
+        greenSum = forehead.data[i+1] + greenSum;
         blueSum = forehead.data[i+2] + blueSum;
       };
 
@@ -141,21 +142,53 @@ var camera = (function(){
       var redAverage = redSum/forehead.data.length;
       var blueAverage = blueSum/forehead.data.length;
 
-      if (rgbMatrix[0].length < bufferWindow){
-        rgbMatrix[0].push(redAverage);
-        rgbMatrix[1].push(average);
-        rgbMatrix[2].push(blueAverage);
+      //cascade so user doesn't have to wait 60sec for a heartbeat, but allows for greater accuracy over time
+      if (red.length < (bufferWindow/8)){
+        red.push(redAverage);
+        green.push(average);
+        blue.push(blueAverage);
+
+        countdown = true;
+
+      } else if (red.length < (bufferWindow/4)){
+        workingBuffer = bufferWindow/8
+        red.push(redAverage);
+        green.push(average);
+        blue.push(blueAverage);
+        sendData(JSON.stringify({"array": [red.slice(red.length - workingBuffer), green.slice(green.length - workingBuffer), blue.slice(blue.length - workingBuffer)], "bufferWindow": workingBuffer}));
+        console.log('128')
+
+      } else if (red.length < (bufferWindow/2)){
+        workingBuffer = bufferWindow/4
+        red.push(redAverage);
+        green.push(average);
+        blue.push(blueAverage);
+        sendData(JSON.stringify({"array": [red.slice(red.length - workingBuffer), green.slice(green.length - workingBuffer), blue.slice(blue.length - workingBuffer)], "bufferWindow": workingBuffer}));
+        console.log('256')
+
+      } else if (red.length < bufferWindow) {
+        workingBuffer = bufferWindow/2
+        red.push(redAverage);
+        green.push(average);
+        blue.push(blueAverage);
+        sendData(JSON.stringify({"array": [red.slice(red.length - workingBuffer), green.slice(green.length - workingBuffer), blue.slice(blue.length - workingBuffer)], "bufferWindow": workingBuffer}));
+        console.log('512')
+
       } else {
-        rgbMatrix[0].push(redAverage);
-        rgbMatrix[0].shift();
-        rgbMatrix[1].push(average);
-        rgbMatrix[1].shift();
-        rgbMatrix[2].push(blueAverage);
-        rgbMatrix[2].shift();
+        workingBuffer = bufferWindow
+        red.push(redAverage);
+        red.shift();
+
+        green.push(average);
+        green.shift();
+
+        blue.push(blueAverage);
+        blue.shift();
+
+        countdown = false;
+        sendData(JSON.stringify({array:[red, green, blue], bufferWindow: bufferWindow}));
       }
-      if (rgbMatrix[1].length == bufferWindow){
-        sendData(rgbMatrix);
-      };
+
 
       // for putting green video image on screen
       // overlayContext.putImageData(forehead, sx, sy);
@@ -201,11 +234,13 @@ var camera = (function(){
     countdownContext.fillText(heartrate >> 0, 25, 25);
     countdownContext.restore();
 
+    // console.log(normalized)
+
   };
   
   function startCapture(){
-    cameraExists = true;
     video.play();
+    pause = false;
 
     renderTimer = setInterval(function(){
         context.drawImage(video, 0, 0, width, height);
@@ -217,13 +252,13 @@ var camera = (function(){
 
   function pauseCapture(){
     if (renderTimer) clearInterval(renderTimer);
-    // if (calculationTimer) clearInterval(calculationTimer);
-
+    pause = true;
     video.pause();
 
     //removes the event listener and stops headtracking
     document.removeEventListener("facetrackingEvent", greenRect);
     htracker.stop();
+    // console.log(heartrate);
 
 
   };
