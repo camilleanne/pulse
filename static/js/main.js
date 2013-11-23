@@ -5,7 +5,7 @@ document.getElementById("end_camera").addEventListener("click", function() {
   if (!paused){
     camera.pause();
     paused = true;
-  } else{
+  } else {
     camera.start();
     paused = false;
   }

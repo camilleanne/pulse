@@ -6,9 +6,9 @@ dataSocket.onopen = function(){
 }
 
 dataSocket.onmessage =  function(e){
-	var data = JSON.parse(e.data)
+	var data = JSON.parse(e.data);
 	if (data.id === "ICA"){
-		camera.cardiac(data.two, 1024)
+		camera.cardiac(data.two, data.bufferWindow);
 	}
 }
 
