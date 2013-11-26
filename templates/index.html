@@ -3,6 +3,8 @@
   <head>
   	<meta charset="utf-8" />
     <title>Heartbeat machine</title> 
+    <!-- <link type="text/css" rel="stylesheet" href="/static/css/rickshaw.min.css"> -->
+
     <style>
     	#vid {
     		clear: both;
@@ -18,7 +20,16 @@
         width: 100px;
 
       }
+     path {
+        stroke: steelblue;
+        stroke-width: 2;
+        fill: none;
+      }
 
+      #confidenceGraph{
+        width: 600px;
+        height: 100px;
+      }
     	#countdown{
     		float: left;
         margin: auto;
@@ -32,19 +43,20 @@
   <!-- <button id="start_camera" name="start_camera">Start Camera</button> -->
   <div id="vid"></div>
   <div id="countdownDiv"></div>
-  <div id="hrCounter"></div>
+  <div id="graph" class="graph"></div>
+  <div id="confidenceGraph" class="graph"></div>
 
   <button id="end_camera" name="end_camera">Pause/Resume Camera</button>
-  <div id="data"></div>
 
 <script src="/static/js/underscore-min.js"></script>
-<script src="static/js/websocket.js"></script>
+<script src="http://mbostock.github.com/d3/d3.v2.js"></script>
+<script src="/static/js/rickshaw.min.js"></script>
+<script src="/static/js/websocket.js"></script>
 <script src="/static/js/mathmatical.js"></script>
 <script src="/static/js/camera.js"></script>
 <script src="/static/js/headtrackr.js"></script>
 <script src="/static/js/dsp.js"></script>
 <script src="/static/js/main.js"></script>
-
 
 </body>
 
