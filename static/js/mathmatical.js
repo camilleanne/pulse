@@ -62,15 +62,15 @@ function filterFreq(fftArray, freqs, framerate){
 
 	var freqObj = _.object(freqs, fftArray);
 	for (freq in freqObj){
-		if ((freq > 0.75) && (freq < 3.333)){
+		if ((freq > 0.75) && (freq < 3)){
 			filteredFFT.push(freqObj[freq]);
-			filteredFreqBin.push(freq);
+			filteredFreqBin.push((freq)/1);
 		}
 	}
-
 	var normalizedFreqs = filteredFFT.map(function(i) {return Math.pow(Math.abs(i), 2)});
 	var idx = _.indexOf(normalizedFreqs, _.max(normalizedFreqs));
 	var freq_in_hertz = filteredFreqBin[idx];
 	
-	return freq_in_hertz;
+	freqs = {normalizedFreqs: normalizedFreqs, filteredFreqBin: filteredFreqBin, freq_in_hertz: freq_in_hertz}
+	return freqs;
 }
