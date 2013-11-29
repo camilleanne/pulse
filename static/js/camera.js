@@ -21,7 +21,15 @@ var camera = (function(){
   // var confidenceGraph;
   var confidenceGraph, x, y, line;
 
-  var dataSocket = new DataSocket({ url: "ws:127.0.0.1:8000/echo" });
+  var dataSocket = new DataSocket({
+    url: "ws:127.0.0.1:8000/echo",
+    onmessage: function (data) {
+      console.log("Received", data);
+      if (data.id === "ICA"){
+       camera.cardiac(data.array, data.bufferWindow);
+      }
+    }
+  });
 
   var dataSend = setInterval(function(){
       // if (sendingData){
@@ -40,7 +48,7 @@ var camera = (function(){
 
       // ** for three channel & ICA **
       if (sendingData){
-        dataSocket.sendData(JSON.stringify({"array": [red, green, blue], "bufferWindow": green.length}));
+        dataSocket.sendData({"array": [red, green, blue], "bufferWindow": green.length});
       }
     }, Math.round(1000));
 
