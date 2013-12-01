@@ -1,18 +1,14 @@
 var camera = (function(){
   var htracker;
   var video, canvas, context, videoPause, canvasOverlay, overlayContext;
-  var countdownCanvas, countdownContext, hrCanvas, hrContext;
-  var renderTimer, dataSend;
+  var countdownCanvas, countdownContext, hrCanvas, hrContext, rawDataGraph;
+  var renderTimer, dataSend, workingBuffer;
   var width = 480;
   var height = 360;
   var fps = 15;
   var heartrate = 60;
-  var circle, circleSVG, r;
-  var toggle = 1;
   var heartrateArray = [];
-  var lastTime;
   var bufferWindow = 512;
-  var workingBuffer;
   var sendingData = false;
   var red = [];
   var green = [];
@@ -22,6 +18,8 @@ var camera = (function(){
   var spectrum;
   var confidenceGraph, x, y, line, xAxis;
   var heartrateAverage = [];
+  var circle, circleSVG, r;
+  var toggle = 1;
   var hrAv = 65;
 
   function initVideoStream(){
@@ -72,6 +70,21 @@ var camera = (function(){
     vid.appendChild(canvas);
     vid.appendChild(canvasOverlay);
     // countdownDiv.appendChild(countdownCanvas);
+
+    rawDataGraph = new Rickshaw.Graph( {
+      element: document.getElementById("rawDataGraph"),
+      width: 200,
+      height: 100,
+      renderer: 'line',
+      min: -5,
+      interpolation: 'basis',
+      series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
+        timeInterval: 1000/fps,
+        maxDataPoints: 100,
+        timeBase: new Date().getTime() / 1000
+      })
+    });
+
 
     startCapture();
   };
@@ -151,8 +164,6 @@ var camera = (function(){
       // // ** for green only **
       // var greenAverage = greenSum/(forehead.data.length/4);
 
-      // shiftDataWindow(redAverage, greenAverage, blueAverage);
-
       // // ** for green only **
       // if (green.length < bufferWindow){
       //     green.push(greenAverage);
@@ -191,87 +202,8 @@ var camera = (function(){
       overlayContext.rotate((Math.PI/2)-event.angle);
 
     }
-    //  ** for debugging framerates  ** 
-    // var newTime = new Date();
-    // var elapsedTime = newTime - lastTime;
-    // lastTime = newTime;
-    // console.log("approx FPS: ", 1000/elapsedTime); // to do: try sending this to the DOM
 
   };
-
-  function shiftDataWindow(redAverage, greenAverage, blueAverage){
-    // cascade so user doesn't have to wait 60sec for a heartbeat
-    // allows for greater accuracy over time
-    if (green.length < (bufferWindow/8)){
-        red.push(redAverage);
-        green.push(greenAverage);
-        blue.push(blueAverage);
-        // time.push(Date.now());
-        
-        // console.log(time)
-
-      } else if (green.length < (bufferWindow/4)){
-        workingBuffer = bufferWindow/8
-        sendingData = true;
-        red.push(redAverage);
-        green.push(greenAverage);
-        blue.push(blueAverage);
-        
-        // time.push(Date.now());
-
-        // sendData(JSON.stringify({"array": [red.slice(red.length - workingBuffer), green.slice(green.length - workingBuffer), blue.slice(blue.length - workingBuffer)], "bufferWindow": workingBuffer, })); //"time": time.slice(time.length - workingBuffer)
-        // sendData(JSON.stringify({"array": [normalize(red.slice(red.length - workingBuffer)), normalize(green.slice(green.length - workingBuffer)), normalize(blue.slice(blue.length - workingBuffer))], "bufferWindow": workingBuffer, })); //"time": time.slice(time.length - workingBuffer)
-
-        // ** green only ** 
-        // cardiac(green.slice(green.length - workingBuffer), workingBuffer)
-
-      } else if (green.length < (bufferWindow/2)){
-        workingBuffer = bufferWindow/4
-        red.push(redAverage);
-        green.push(greenAverage);
-        blue.push(blueAverage);
-        // time.push(Date.now());
-        // sendData(JSON.stringify({"array": [red.slice(red.length - workingBuffer), green.slice(green.length - workingBuffer), blue.slice(blue.length - workingBuffer)], "bufferWindow": workingBuffer, })); //"time":time.slice(time.length - workingBuffer)
-        // sendData(JSON.stringify({"array": [normalize(red.slice(red.length - workingBuffer)), normalize(green.slice(green.length - workingBuffer)), normalize(blue.slice(blue.length - workingBuffer))], "bufferWindow": workingBuffer, })); //"time":time.slice(time.length - workingBuffer)
-
-        // ** green only ** 
-        // cardiac(green.slice(green.length - workingBuffer), workingBuffer)
-
-      } else if (green.length < bufferWindow) {
-        workingBuffer = bufferWindow/2
-        red.push(redAverage);
-        green.push(greenAverage);
-        blue.push(blueAverage);
-        // time.push(Date.now());
-        // sendData(JSON.stringify({"array": [red.slice(red.length - workingBuffer), green.slice(green.length - workingBuffer), blue.slice(blue.length - workingBuffer)], "bufferWindow": workingBuffer, })); //"time":time.slice(time.length - workingBuffer)
-        // sendData(JSON.stringify({"array": [normalize(red.slice(red.length - workingBuffer)), normalize(green.slice(green.length - workingBuffer)), normalize(blue.slice(blue.length - workingBuffer))], "bufferWindow": workingBuffer, })); //"time":time.slice(time.length - workingBuffer)
-
-        // ** green only ** 
-        // cardiac(green.slice(green.length - workingBuffer), workingBuffer)
-
-      } else {
-        workingBuffer = bufferWindow
-        red.push(redAverage);
-        red.shift();
-
-        green.push(greenAverage);
-        green.shift();
-
-        // ** green only ** 
-        // cardiac(green, bufferWindow)
-
-        blue.push(blueAverage);
-        blue.shift();
-
-        // time.push(Date.now());
-        // time.shift();
-        // countdown = false;
-        // sendData(JSON.stringify({"array":[red, green, blue], "bufferWindow": bufferWindow, })); //"time":time
-        // sendData(JSON.stringify({"array":[normalize(red), normalize(green), normalize(blue)], "bufferWindow": bufferWindow, })); //"time":time
-
-      }
-  }
-
 
   function drawCountdown(array){
     countdownContext.font = "20pt Helvetica";
@@ -316,30 +248,26 @@ var camera = (function(){
 
 
   };
-  var heartbeatTimer = setInterval(function(){
-    // var duration = Math.round((60/hrAv) * 1000);
-    var duration = Math.round((60/hrAv) * 1000)/4;
-    if (confidenceGraph){
-     if (toggle % 2 == 0){
 
-        circleSVG.select("circle")
-               .transition()
-               .attr("r", r)
-               .duration(duration);
-               console.log("bing")
-      
-      } else if (!toggle % 2 == 0){
-        circleSVG.select("circle")
-               .transition()
-               .attr("r", r + 10)
-               .duration(duration);
-               console.log("bong!")
-      }
-      if (toggle == 10){
-        toggle = 1;
-      }
-      toggle++;
-      console.log(Math.round(((60/hrAv) * 1000)/2))
+  var heartbeatTimer = setInterval(function(){
+    var duration = Math.round(((60/hrAv) * 1000)/4);
+    if (confidenceGraph){
+       if (toggle % 2 == 0){
+          circleSVG.select("circle")
+                 .transition()
+                 .attr("r", r)
+                 .duration(duration);
+        
+        } else {
+          circleSVG.select("circle")
+                 .transition()
+                 .attr("r", r + 10)
+                 .duration(duration);
+        }
+        if (toggle == 10){
+          toggle = 0;
+        }
+        toggle++;
     }
   }, Math.round(((60/hrAv) * 1000)/2));
 
@@ -347,7 +275,6 @@ var camera = (function(){
     var cx = 100;
     var cy = 100;
     r = 60;
-    var heartbeatTimer;
 
     if (circle) {
       circleSVG.select("text").text(heartrate >> 0);
@@ -361,42 +288,29 @@ var camera = (function(){
                         .attr("cx", cx)
                         .attr("cy", cy)
                         .attr("r", r)
-                        .attr("fill", "teal");
+                        .attr("fill", "#DA755C");
+
       circleSVG.append("text")
                .text(heartrate >> 0)
                .attr("text-anchor", "middle")
-               .attr("x", cx)
-               .attr("y", cy)
+               .attr("x", cx )
+               .attr("y", cy + 10)
                .attr("font-size", "20pt")
                .attr("fill", "white");    
     }
   }
 
-  var rawDataGraph = new Rickshaw.Graph( {
-      element: document.getElementById("rawDataGraph"),
-      width: 200,
-      height: 100,
-      renderer: 'line',
-      min: -5,
-      interpolation: 'basis',
-      series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
-        timeInterval: 1000/fps,
-        maxDataPoints: 100,
-        timeBase: new Date().getTime() / 1000
-      })
-  });
-  
   function showConfidenceGraph(data, width, height){
     // x == filteredFreqBin, y == normalizedFreqs
     var max = _.max(data.normalizedFreqs);
-    data.filteredFreqBin = _.map(data.filteredFreqBin, function(num){return num * 60})
+    data.filteredFreqBin = _.map(data.filteredFreqBin, function(num){return num * 60});
     var data = _.zip(data.normalizedFreqs, data.filteredFreqBin);
     
     if (confidenceGraph){
       y = d3.scale.linear().domain([ 0, max]).range([height, 0]);
-      confidenceGraph.select("path").transition().attr("d", line(data)).attr("class", "line").ease("linear").duration(750)
+      confidenceGraph.select("path").transition().attr("d", line(data)).attr("class", "line").ease("linear").duration(750);
     } else {
-      x = d3.scale.linear().domain([48, 180]).range([0, width]);
+      x = d3.scale.linear().domain([48, 180]).range([0, width - 20]);
       y = d3.scale.linear().domain([0, max]).range([height, 0]);
 
       confidenceGraph = d3.select("#confidenceGraph").append("svg").attr("width", width).attr("height", 150);
@@ -431,7 +345,6 @@ var camera = (function(){
       clearConfidenceGraph();
     }
    
-
     renderTimer = setInterval(function(){
         context.drawImage(video, 0, 0, width, height);
       }, Math.round(1000 / fps));
@@ -450,8 +363,6 @@ var camera = (function(){
     }, Math.round(1000));
 
     headtrack();
-    
-
   };
 
   function pauseCapture(){
@@ -468,8 +379,9 @@ var camera = (function(){
     htracker.stop();
 
   };
+
   var errorCallback = function(error){
-    console.log('rejeeeected!', error);
+    console.log('something is wrong with the webcam!', error);
   }; 
 
   return{
@@ -482,9 +394,4 @@ var camera = (function(){
   }
 
 })();
-
-
-
-
-
 
