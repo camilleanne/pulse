@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask_sockets import Sockets
 import model
+import json
 
 app = Flask(__name__)
 sockets = Sockets(app)
@@ -12,15 +13,10 @@ def index():
 @sockets.route('/echo')
 def echo_socket(ws):
 	while True:
-		message = ws.receive()
-		# if len(message) <= 4:
-		# 	buffer_window = message
-		# else:
-		signals = model.parse_RGB(message, 1024)
+		message = json.loads(ws.receive())
+		signals = model.parse_RGB(message)
+		
 		ws.send(signals)
-		# ws.send("received")
-		# print message
-		# flash(message)
 
 if __name__ == "__main__":
     app.run(debug=True)

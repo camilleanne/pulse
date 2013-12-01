@@ -62,7 +62,7 @@ function filterFreq(fftArray, freqs, framerate){
 
 	var freqObj = _.object(freqs, fftArray);
 	for (freq in freqObj){
-		if ((freq > 0.75) && (freq < 3)){
+		if ((freq > 0.80) && (freq < 3)){
 			filteredFFT.push(freqObj[freq]);
 			filteredFreqBin.push((freq)/1);
 		}

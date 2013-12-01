@@ -34,9 +34,16 @@ def parse_ICA_results(ICA, buffer_window): #time
 	two = (np.hamming(len(two)) * two)
 	three = (np.hamming(len(three)) * three)
 
-	one = np.fft.irfft(one).astype(float).tolist()
-	two = np.fft.irfft(two).astype(float).tolist()
-	three = np.fft.irfft(three).astype(float).tolist()
+	# print "one: ", one.astype(float).tolist()
+	# print "two: ", two.astype(float).tolist()
+	# print "three: ", three.astype(float).tolist()
+
+
+	one = np.absolute(np.square(np.fft.irfft(one))).astype(float).tolist()
+	two = np.absolute(np.square(np.fft.irfft(two))).astype(float).tolist()
+	three = np.absolute(np.square(np.fft.irfft(three))).astype(float).tolist()
+
+
 
 	power_ratio = [0, 0, 0]
 	power_ratio[0] = np.sum(one)/np.amax(one)
@@ -51,22 +58,19 @@ def parse_ICA_results(ICA, buffer_window): #time
 		signals["array"] = three
 
 	print power_ratio
-	print signals
+	# print signals
 	return signals
 
 	# # #** for green channel only **
 	# hamming = (np.hamming(len(ICA)) * ICA)
-	# fft = np.fft.irfft(hamming)
+	# fft = np.fft.rfft(hamming)
+	# fft = np.absolute(np.square(fft))
 	# signals["array"] = fft.astype(float).tolist()
 
 	# return signals
 
 
 	# ** experiments **
-	# fft = np.fft.rfft(hamming)
-	# print "hamming: ", hamming
-	# print "fft: ", fft.astype(float).tolist()
-
 	# ** for interpolation and hamming **
 	# even_times = np.linspace(time[0], time[-1], len(time))
 	# interpolated_two = np.interp(even_times, time, np.squeeze(np.asarray(ICA[:, 1])).tolist())
@@ -77,7 +81,6 @@ def parse_ICA_results(ICA, buffer_window): #time
 
 	# #fft = np.fft.rfft(np.squeeze(np.asarray(ICA[:, 1])))
 	# #signals["two"] = fft.astype(float).tolist()
-	# #print signals["two"]
 
 
 def normalize_matrix(matrix):
