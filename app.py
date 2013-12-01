@@ -8,7 +8,13 @@ sockets = Sockets(app)
 
 @app.route("/")
 def index():
+	return render_template("splash.html")
+
+
+@app.route("/begin")
+def get_heartrate():
 	return render_template("index.html")
+
 
 @sockets.route('/echo')
 def echo_socket(ws):
@@ -19,4 +25,4 @@ def echo_socket(ws):
 		ws.send(signals)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+	app.run(debug = True)
