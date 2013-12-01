@@ -2,11 +2,13 @@ var camera = (function(){
   var htracker;
   var video, canvas, context, videoPause, canvasOverlay, overlayContext;
   var countdownCanvas, countdownContext, hrCanvas, hrContext;
-  var renderTimer;
+  var renderTimer, dataSend;
   var width = 480;
   var height = 360;
   var fps = 15;
-  var heartrate;
+  var heartrate = 60;
+  var circle, circleSVG, r;
+  var toggle = 1;
   var heartrateArray = [];
   var lastTime;
   var bufferWindow = 512;
@@ -18,30 +20,9 @@ var camera = (function(){
   // var time = [];
   var pause = false;
   var spectrum;
-  // var confidenceGraph;
-  var confidenceGraph, x, y, line;
-
-
-  var dataSend = setInterval(function(){
-      // if (sendingData){
-      //     if (workingBuffer == bufferWindow){
-      //       sendData(JSON.stringify({"array":[red, green, blue], "bufferWindow": bufferWindow, }));
-      //     } else {
-      //       sendData(JSON.stringify({"array": [red.slice(red.length - workingBuffer), green.slice(green.length - workingBuffer), blue.slice(blue.length - workingBuffer)], "bufferWindow": workingBuffer}));
-
-      //   }
-      // }
-
-      // // ** for green **
-      // if (sendingData){
-      //   sendData(JSON.stringify({"array": green, "bufferWindow": green.length}));
-      // }
-
-      // ** for three channel & ICA **
-      if (sendingData){
-        sendData(JSON.stringify({"array": [red, green, blue], "bufferWindow": green.length}));
-      }
-    }, Math.round(1000));
+  var confidenceGraph, x, y, line, xAxis;
+  var heartrateAverage = [];
+  var hrAv = 65;
 
   function initVideoStream(){
     video = document.createElement("video");
@@ -70,7 +51,7 @@ var camera = (function(){
     canvas.setAttribute('width', width);
     canvas.setAttribute('height', height);
     context = canvas.getContext("2d");
-
+    
     canvasOverlay = document.createElement("canvas");
     canvasOverlay.setAttribute('width', width);
     canvasOverlay.setAttribute('height', height);
@@ -81,16 +62,16 @@ var camera = (function(){
     overlayContext = canvasOverlay.getContext('2d');
     overlayContext.clearRect(0,0,width,height);
 
-    countdownCanvas = document.createElement("canvas");
-    countdownCanvas.setAttribute('width', 200);
-    countdownCanvas.setAttribute('height', 100);
-    countdownCanvas.style.display = 'block';
-    countdownContext = countdownCanvas.getContext('2d');
-    countdownContext.clearRect(0,0,width,height);
+    // countdownCanvas = document.createElement("canvas");
+    // countdownCanvas.setAttribute('width', 200);
+    // countdownCanvas.setAttribute('height', 100);
+    // countdownCanvas.style.display = 'block';
+    // countdownContext = countdownCanvas.getContext('2d');
+    // countdownContext.clearRect(0,0,width,height);
 
     vid.appendChild(canvas);
     vid.appendChild(canvasOverlay);
-    countdownDiv.appendChild(countdownCanvas);
+    // countdownDiv.appendChild(countdownCanvas);
 
     startCapture();
   };
@@ -118,21 +99,12 @@ var camera = (function(){
     sy = event.y + (-(event.height/3)) >> 0;
     sw = (event.width/5) >> 0;
     sh = (event.height/10) >> 0;
-    // sw = (event.width/3) >> 0;
-    // sh = (event.height/5) >> 0;
 
     //  ** CS == camshift (in headtrackr.js) ** 
     //  ** once we have stable tracking, draw rectangle ** 
     if (event.detection == "CS") /**/ {
-      //  ** Notes:  ** 
-      //  ** translate moves the origin point of context by event.x and event.y ** 
-      //  ** ex. (88, 120) becomes the new (0, 0), removing translating for  ** 
-      //  ** the moment and adding (event.x + or event.y + ) where needed for now ** 
-
-      // overlayContext.translate(event.x, event.y)
       overlayContext.rotate(event.angle-(Math.PI/2));
       overlayContext.strokeStyle = "#00CC00";
-
       overlayContext.strokeRect(event.x + (-(event.width/2)) >> 0, event.y + (-(event.height/2)) >> 0, event.width, event.height);
       
       //  ** blue forehead box (for debugging) ** 
@@ -160,12 +132,15 @@ var camera = (function(){
         redSum = forehead.data[i] + redSum;
         greenSum = forehead.data[i+1] + greenSum;
         blueSum = forehead.data[i+2] + blueSum;
-
+        
+        // ** blurs video after head tracking **
+        border = document.getElementById("border");
+        canvas.className = 'blur';
+        border.className = 'border';
         // // ** for green only **
         // greenSum = forehead.data[i+1] + greenSum;
-
-
       };
+
       // ** get average of green area for each frame **
 
       // ** for three channel & ICA **
@@ -180,7 +155,7 @@ var camera = (function(){
 
       // // ** for green only **
       // if (green.length < bufferWindow){
-      //     green.push(greenAverage)
+      //     green.push(greenAverage);
       //   if (green.length > bufferWindow/8){
       //       sendingData = true;
       //   }
@@ -191,9 +166,9 @@ var camera = (function(){
 
       // ** for three channel & ICA **
       if (green.length < bufferWindow){
-          red.push(redAverage)
-          green.push(greenAverage)
-          blue.push(blueAverage)
+          red.push(redAverage);
+          green.push(greenAverage);
+          blue.push(blueAverage);
         if (green.length > bufferWindow/8){
             sendingData = true;
         }
@@ -206,12 +181,14 @@ var camera = (function(){
         blue.shift();
       }
 
-      // for putting green video image on screen
+      graphData = {one: normalize(green)[green.length-1]}
+      rawDataGraph.series.addData(graphData);
+      rawDataGraph.render();
+
+      // ** for putting green video image on screen **
       // overlayContext.putImageData(forehead, sx, sy);
+
       overlayContext.rotate((Math.PI/2)-event.angle);
-      
-      // ** see note above about .translate() ** 
-      // overlayContext.translate(-event.x, -event.y);
 
     }
     //  ** for debugging framerates  ** 
@@ -306,45 +283,97 @@ var camera = (function(){
 
 
   function cardiac(averagePixelArray, bfwindow){
-    // console.log("average pixels: ", averagePixelArray)
 
     // var normalized = normalize(averagePixelArray);
-
-    // console.log('normalized: ', normalized)
     // var normalized = averagePixelArray;
-    // console.log(normalized)
 
-    // fast fourier transform from dsp.js
-    
+    // ** fast fourier transform from dsp.js **
     // var fft = new RFFT(bfwindow, fps);
     // fft.forward(normalized);
     // spectrum = fft.spectrum;
 
-    // console.log("spectrum: ",spectrum)
-    // spectrum = averagePixelArray;
-    spectrum = averagePixelArray
+    spectrum = averagePixelArray;
 
     var freqs = frequencyExtract(spectrum, fps);
-    var freq = freqs.freq_in_hertz
+    var freq = freqs.freq_in_hertz;
     heartrate = freq * 60;
-    heartrateArray.push(heartrate)
+    heartrateArray.push(heartrate);
 
-    //draw heartbeat to page
-    countdownContext.font = "20pt Helvetica";
-    countdownContext.clearRect(0,0,200,100);
-    countdownContext.save();
-    countdownContext.fillText(heartrate >> 0, 25, 25);
-    countdownContext.restore();
-
-    // graphData = {one: normalized[normalized.length-1]}
+    // graphData = {one: green[green.length-1]}
     // graph.series.addData(graphData);
     // graph.render();
-    showConfidenceGraph(freqs, 600, 100)
+    showConfidenceGraph(freqs, 600, 100);
+    heartbeatCircle(heartrate);
+
+    if (heartrateAverage.length < 3){
+        heartrateAverage.push(heartrate);
+        hrAV = heartrate;
+    } else {
+      heartrateAverage.push(heartrate);
+      heartrateAverage.shift();
+      hrAv = mean(heartrateAverage);
+    }
+
 
   };
-  
-  var graph = new Rickshaw.Graph( {
-      element: document.getElementById("graph"),
+  var heartbeatTimer = setInterval(function(){
+    // var duration = Math.round((60/hrAv) * 1000);
+    var duration = Math.round((60/hrAv) * 1000)/4;
+    if (confidenceGraph){
+     if (toggle % 2 == 0){
+
+        circleSVG.select("circle")
+               .transition()
+               .attr("r", r)
+               .duration(duration);
+               console.log("bing")
+      
+      } else if (!toggle % 2 == 0){
+        circleSVG.select("circle")
+               .transition()
+               .attr("r", r + 10)
+               .duration(duration);
+               console.log("bong!")
+      }
+      if (toggle == 10){
+        toggle = 1;
+      }
+      toggle++;
+      console.log(Math.round(((60/hrAv) * 1000)/2))
+    }
+  }, Math.round(((60/hrAv) * 1000)/2));
+
+  function heartbeatCircle(heartrate){
+    var cx = 100;
+    var cy = 100;
+    r = 60;
+    var heartbeatTimer;
+
+    if (circle) {
+      circleSVG.select("text").text(heartrate >> 0);
+
+    } else {
+      circleSVG = d3.select("#heartbeat")
+                    .append("svg")
+                    .attr("width", 200)
+                    .attr("height", 200);
+      circle = circleSVG.append("circle")
+                        .attr("cx", cx)
+                        .attr("cy", cy)
+                        .attr("r", r)
+                        .attr("fill", "teal");
+      circleSVG.append("text")
+               .text(heartrate >> 0)
+               .attr("text-anchor", "middle")
+               .attr("x", cx)
+               .attr("y", cy)
+               .attr("font-size", "20pt")
+               .attr("fill", "white");    
+    }
+  }
+
+  var rawDataGraph = new Rickshaw.Graph( {
+      element: document.getElementById("rawDataGraph"),
       width: 200,
       height: 100,
       renderer: 'line',
@@ -355,52 +384,88 @@ var camera = (function(){
         maxDataPoints: 100,
         timeBase: new Date().getTime() / 1000
       })
-    });
+  });
+  
   function showConfidenceGraph(data, width, height){
-
-    var data = _.zip(data.normalizedFreqs, data.filteredFreqBin)
+    // x == filteredFreqBin, y == normalizedFreqs
+    var max = _.max(data.normalizedFreqs);
+    data.filteredFreqBin = _.map(data.filteredFreqBin, function(num){return num * 60})
+    var data = _.zip(data.normalizedFreqs, data.filteredFreqBin);
+    
     if (confidenceGraph){
-      confidenceGraph.selectAll("path").transition().attr("d", line(data)).attr("class", "line").ease("linear").duration(66);
-
+      y = d3.scale.linear().domain([ 0, max]).range([height, 0]);
+      confidenceGraph.select("path").transition().attr("d", line(data)).attr("class", "line").ease("linear").duration(750)
     } else {
-      confidenceGraph = d3.select("#confidenceGraph").append("svg").attr("width", width).attr("height", height);
-      x = d3.scale.linear().domain([0.75,4]).range([0, width]);
-      y = d3.scale.linear().domain([0, 5]).range([height, 10]);
+      x = d3.scale.linear().domain([48, 180]).range([0, width]);
+      y = d3.scale.linear().domain([0, max]).range([height, 0]);
+
+      confidenceGraph = d3.select("#confidenceGraph").append("svg").attr("width", width).attr("height", 150);
+      
+      xAxis = d3.svg.axis().scale(x).tickSize(-height).tickSubdivide(true);
 
       line = d3.svg.line()
-        .x(function(d) { return x(+d[1]); })
-        .y(function(d) { return y(+d[0]); });
-
+                    .x(function(d) { return x(+d[1]); })
+                    .y(function(d) { return y(+d[0]); });
+      
       confidenceGraph.append("svg:path").attr("d", line(data)).attr("class", "line");
+      confidenceGraph.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
+      confidenceGraph.append("text").attr("x", width - 6).attr("y", height - 6).style("text-anchor", "end").text("confidence in BPM");
     }
-
-
   }
 
-  // }
+  function clearConfidenceGraph(){
+    var confidenceClear = document.getElementById("confidenceGraph");
+    while (confidenceClear.firstChild){
+      confidenceClear.removeChild(confidenceClear.firstChild);
+    }
+  }
+
   function startCapture(){
     video.play();
-    pause = false;
+    if (pause == true){
+      pause = false;
+      red = [];
+      green = [];
+      blue = []; 
+      confidenceGraph = null;
+      clearConfidenceGraph();
+    }
+   
 
     renderTimer = setInterval(function(){
         context.drawImage(video, 0, 0, width, height);
       }, Math.round(1000 / fps));
 
+    dataSend = setInterval(function(){
+      // // ** for green only **
+      // if (sendingData){
+      //   sendData(JSON.stringify({"array": green, "bufferWindow": green.length}));
+      // }
+
+      // ** for three channel & ICA **
+      if (sendingData){
+        sendData(JSON.stringify({"array": [red, green, blue], "bufferWindow": green.length}));
+      }
+
+    }, Math.round(1000));
+
     headtrack();
+    
 
   };
 
   function pauseCapture(){
     if (renderTimer) clearInterval(renderTimer);
     if (dataSend) clearInterval(dataSend);
+    if (heartbeatTimer) clearInterval(heartbeatTimer);
+
     pause = true;
+    sendingData = false;
     video.pause();
 
     //removes the event listener and stops headtracking
     document.removeEventListener("facetrackingEvent", greenRect);
     htracker.stop();
-    // console.log(heartrate);
-
 
   };
   var errorCallback = function(error){
