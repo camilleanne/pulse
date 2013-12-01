@@ -1,0 +1,201 @@
+{% extends 'master.html' %}
+{% block body %}
+		<div id="container">
+			<canvas id="overlay" width="600" height="300"></canvas>
+			<div id="graph"><svg></svg></div>
+			<h2 class="begin"><a href="{{url_for("get_heartrate")}}" class="begin"> begin <a></h2>
+			
+		<!-- <div>
+			<div id="arrow"></div>
+			<h2 id="allowWebcam">allow webcam</h2>
+		</div> -->
+		</div>
+
+	<script>
+
+		var ctx = document.getElementById('overlay').getContext("2d");
+		ctx.font = "Normal 210px 'BlurBold'";
+		ctx.fillStyle = "#E1F1F1"; 
+		ctx.fillRect(0,0,600,300); 
+		ctx.globalCompositeOperation = 'destination-out'; 
+		ctx.fillText("pulse", 20, 210);
+
+		// displayGraph("#graph", 600, 200, 1000, 990)
+
+		function displayGraph(id, width, height, updateDelay, transitionDelay) {
+			var data = [[2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2],[2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3],[3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4],[4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5],[5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6],[6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7]]
+
+			var graph = d3.select(id).append("svg:svg").attr("width", "100%").attr("height", "100%");
+
+			var x = d3.scale.linear().domain([0, 100]).range([-5, width]);
+			var y = d3.scale.linear().range([0, height]);
+			
+			y.domain([
+			    d3.min(data, function(c) { return d3.min(c); }),
+			    d3.max(data, function(c) { return d3.max(c); })
+			]);
+
+			var line = d3.svg.line()
+							.x(function(d,i) { 
+								return x(i); 
+							})
+							.y(function(d) { 
+								return y(d); 
+							})
+							.interpolate('basis');
+			var lines = graph.selectAll(".lines").data(data).enter().append("g").attr("class", "lines");
+
+			lines.append("svg:path").attr("class", "line").attr("d", function(d) { return line(d); });
+
+			function redrawWithAnimation(){
+				graph.selectAll("path")
+					 .data(data)
+					 .attr("transform", "translate("+x(1) + ")")
+					 .attr("d", line)
+					 .transition()
+					 .ease("linear")
+					 .duration(transitionDelay)
+					 .attr("transform", "translate(" + x(0) + ")");
+			
+			}
+			
+			function shiftArray(array){
+				var v = array.shift(); 
+				array.push(v); 
+
+			}
+
+			setInterval(function() {
+				data.forEach(shiftArray);
+				redrawWithAnimation();
+				}, updateDelay);
+		 }
+
+
+		/* ## Sine Wave ##
+			code from: http://bl.ocks.org/enjalot/1457934
+			with minor modifications to remove jwerty
+		*/
+		var w = 600,
+		h = 210,
+		start = Date.now();
+
+		var rings = [ ];
+		var lines = [ ];
+
+		var n = 20;
+		var m = 60;
+
+		for (i in d3.range(n)){
+		    if(i < 3)
+		        var speed = (i-3) * 1e-2;
+		    else
+		        var speed = (i-2) * 1e-2;
+		    var speed = .001 * i * 4;
+
+		    var data = d3.range(m) 
+		    lines.push({ 
+		        width: 1.5, 
+		        height: 4,
+		        speed: speed,
+		        index: i,
+		        data: data
+		    })
+		}
+
+		var xscale = d3.scale.linear()
+		    .domain([0,m])
+		    .range([0, w])
+
+		var omega = -.22
+		function line_maker( data, speed )
+		{
+		    var freq = Math.PI*.4 + 3 * omega * data.index // * 3000
+		    var svgline = d3.svg.line()
+		    .x(function(d,i)
+		    {
+		        return xscale(d);
+		    })
+		    .y(function(d,i)
+		    {
+		        var theta = freq * d/m * Math.PI * 4 
+		        var y = data.height * (Math.sin(theta + (n-data.index) * .1 * speed * .05 ));
+		        return y
+		    })
+		    .interpolate("basis")
+		    return svgline(data.data);
+		}
+
+		var spacing = 10;
+		function lineEnter(d, i) {
+		  d3.select(this).selectAll("path.path")
+		      .data([d])
+		      .enter()
+		    .append("svg:path")
+		      .attr("class", "path waveform")
+		    .attr("d", function(d,i) {
+		              return line_maker( d, 0 ) 
+		            }
+		        )
+		      .attr("stroke-width", function(e,i) { return e.width;})
+		      .attr("stroke", "#fff")
+		      .attr("fill", "none");
+
+		    update_spacing()
+		}
+
+		var svg = d3.select("svg")
+		    .attr("width", w)
+		    .attr("height", h)
+		  .append("svg:g")
+
+		var line = svg.selectAll("g.line")
+		    .data(lines)
+		  .enter().append("svg:g")
+		    .attr("class", "line")
+		    .attr("stroke", "#DACCA7")
+		    .each(lineEnter);
+
+		var sm = .39 
+		function update_spacing()
+		{
+		    var th = spacing * n;
+		    var hscale = d3.scale.linear()
+		        .domain([0, n])
+		        .range([0, h])
+
+		    console.log("spacing", spacing)
+		    d3.selectAll("g.line path")
+		        .attr("transform", function(d, i) { 
+		            return "translate(" + [0, h/2 + th / 2 - spacing * d.index] + ")"; 
+		        })
+		}
+
+		var color = d3.scale.linear()
+		    .domain([-1, 1])
+		    .interpolate(d3.interpolateRgb)
+		    .range(['#fff', '#000'])
+
+		var opacity = d3.scale.linear()
+		    .domain([0, n])
+		    .range([1, .4])
+
+		b = 1;
+		d3.timer(function() {
+		  var elapsed = Date.now() - start
+		  var damp = .3
+
+		  rotate = function(d,i) { 
+		  var speed = sm * d.speed * elapsed * .1
+		    return "rotate(" + speed + ")"; 
+		  };
+
+		  line = d3.selectAll("g.line path")
+		      .attr("d", function(d,i) {
+		             var speed = sm * .08 * elapsed + d.index * 4 
+		             return line_maker( d, speed ) 
+		        })
+		      .attr("stroke-opacity", function(d,i) { return opacity(d.index);})    
+		});
+	</script>
+{% endblock %}
