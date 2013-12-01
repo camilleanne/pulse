@@ -6,13 +6,34 @@
     <!-- <link type="text/css" rel="stylesheet" href="/static/css/rickshaw.min.css"> -->
 
     <style>
-    	#vid {
+    	body{
+        font-family: helvetica;
+        font-size: 12px;
+      }
+      #vid {
     		clear: both;
         display:block;
         margin: auto;
         position: relative;
         width: 480px;
     	}
+      .blur{
+        filter: blur(10px);
+        -webkit-filter: blur(10px);
+      }
+      .border{
+        width: 450px;
+        height: 320px;
+        border: 42px solid white;
+        z-index: 100001;
+        left: -27px;
+        top: -10px;
+      }
+
+      #border{
+        position: absolute;
+      }
+
       #end_camera{
         text-align: center;
         margin: auto;
@@ -28,7 +49,8 @@
 
       #confidenceGraph{
         width: 600px;
-        height: 100px;
+        height: 140px;
+        margin: 10px;
       }
     	#countdown{
     		float: left;
@@ -42,16 +64,41 @@
       #confidenceGraph{
         float:left;
       }
+
+      #heartbeat{
+        height: 200px;
+        width: 200px;
+      }
+
+
+      path.line {
+        fill: none;
+        stroke-width: 1.5px;
+      }
+
+      .axis {
+        shape-rendering: crispEdges;
+      }
+
+
+      .x.axis .minor {
+        stroke-opacity: .5;
+      }
+
+      .x.axis path {
+        display: none;
+      }
+
     </style>
   </head>
 <body>
-	{% for message in get_flashed_messages() %}
-        <li>{{ message }}</li>
-    {% endfor %}
-  <!-- <button id="start_camera" name="start_camera">Start Camera</button> -->
-  <div id="vid"></div>
-  <div id="countdownDiv"></div>
-  <div id="graph" class="graph"></div>
+
+  <div id="vid">
+    <div id="border"></div>
+  </div>
+
+  <div id="heartbeat"></div>
+  <div id="rawDataGraph" class="graph"></div>
   <div id="confidenceGraph" class="graph"></div>
 
   <button id="end_camera" name="end_camera">Pause/Resume Camera</button>
