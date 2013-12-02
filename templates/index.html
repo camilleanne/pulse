@@ -1,123 +1,92 @@
-<!DOCTYPE html>
-<html lang='en'>
-  <head>
-  	<meta charset="utf-8" />
-    <title>Heartbeat machine</title> 
-    <!-- <link type="text/css" rel="stylesheet" href="/static/css/rickshaw.min.css"> -->
+{% extends "master.html" %}
+{% block body %}
 
-    <style>
-    	body{
-        font-family: helvetica;
-        font-size: 12px;
-      }
-      #vid {
-    		clear: both;
-        display:block;
-        margin: auto;
-        position: relative;
-        width: 480px;
-    	}
-      .blur{
-        filter: blur(10px);
-        -webkit-filter: blur(10px);
-      }
-      .border{
-        width: 450px;
-        height: 320px;
-        border: 42px solid white;
-        z-index: 100001;
-        left: -27px;
-        top: -10px;
-      }
-
-      #border{
-        position: absolute;
-      }
-
-      #end_camera{
-        text-align: center;
-        margin: auto;
-        display:block;
-        width: 100px;
-
-      }
-     path {
-        stroke: steelblue;
-        stroke-width: 2;
-        fill: none;
-      }
-
-      #confidenceGraph{
-        width: 600px;
-        height: 140px;
-        margin: 10px;
-      }
-    	#countdown{
-    		float: left;
-        margin: auto;
-    	}
-      #graph{
-        float:left;
-
-        clear:both;
-      }
-      #confidenceGraph{
-        float:left;
-      }
-
-      #heartbeat{
-        height: 200px;
-        width: 200px;
-      }
-
-
-      path.line {
-        fill: none;
-        stroke-width: 1.5px;
-      }
-
-      .axis {
-        shape-rendering: crispEdges;
-      }
-
-
-      .x.axis .minor {
-        stroke-opacity: .5;
-      }
-
-      .x.axis path {
-        display: none;
-      }
-
-    </style>
-  </head>
-<body>
-
-  <div id="vid">
+  <div id="hidden">
+      <div id="arrow" class="pulse"></div>
+      <h2 id="allowWebcam">allow webcam</h2>
+  </div>
+  <div id="vid" class="video">
     <div id="border"></div>
+
+    <canvas id="canvas" class="video"></canvas>
+    <canvas id="canvasOverlay" class="video"></canvas>
+  </div>
+
+  <div id="buttonBar" class="hide">
+      <button id="end_camera" name="end_camera">Pause Camera</button>
+      <button id="blurToggle" name="blurToggle">Fade Video</button>
+      <button id="minToggle" name="minToggle">Minimize Video</button>
   </div>
 
   <div id="heartbeat"></div>
   <div id="rawDataGraph" class="graph"></div>
   <div id="confidenceGraph" class="graph"></div>
 
-  <button id="end_camera" name="end_camera">Pause/Resume Camera</button>
-
-<script src="/static/js/underscore-min.js"></script>
-<script src="http://mbostock.github.com/d3/d3.v2.js"></script>
-<script src="/static/js/rickshaw.min.js"></script>
-<script src="/static/js/websocket.js"></script>
-<script src="/static/js/mathmatical.js"></script>
-<script src="/static/js/camera.js"></script>
-<script src="/static/js/headtrackr.js"></script>
-<script src="/static/js/dsp.js"></script>
-<script src="/static/js/main.js"></script>
-
-</body>
-
-</html>
 
 
+  <script src="/static/js/main.js"></script>
+  <script>
 
+    $( "#minToggle" ).click(function() {
+      if ($("#minToggle").html() == "Minimize Video"){
+        var offset = $( ".video" ).offset()
+        debugger;
+        $( ".video" ).animate({
+          width: 240,
+          height: 180,
+          right: "+=" + offset.left + "px"
+        }, 1500 );
+        $( "#border" ).animate({
+          width: 225,
+          height: 170,
+          right: "+=" + offset.left + "px",
+          top: "-=10px"
+        }, 1500 );
+        $("#minToggle").html("Maximize Video");
+      } else {
+        debugger;
+        var offset = $( ".video" ).offset()
+        $( ".video" ).animate({
+          width: 480,
+          height: 360,
+          right: "-=50px"
+        }, 1500 );
+        $( "#border" ).animate({
+          width: 460,
+          height: 340,
+          right: "-30px",
+          top: "-30px"
+        }, 1500 );
+        $("#minToggle").html("Minimize Video");
+      }
+      
+    });
+    $( "#blurToggle" ).click(function() {
+      $( "#canvas" ).toggleClass("blur");
+      $( "#border").toggleClass("border");
+      if ($("#border").position().top == "-10"){
+        $("#border").css("top", "-40px");
+      }
 
+      var html = $("#blurToggle").html()
+      if ($("#blurToggle").html() == "Fade Video"){
+        $("#blurToggle").html("Focus Video");
+      } else {
+        $("#blurToggle").html("Fade Video");
+      }
+     
 
+    });
+
+    $("#end_camera").click(function(){
+      if ($("#end_camera").html() == "Pause Camera"){
+        $("#end_camera").html("Restart Camera");
+      } else {
+        $("#end_camera").html("Pause Camera");
+      }
+
+    });
+
+  </script>
+
+{% endblock %}
