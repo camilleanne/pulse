@@ -24,12 +24,17 @@ var camera = (function(){
 
   function initVideoStream(){
     video = document.createElement("video");
-    video.setAttribute('width', width);
-    video.setAttribute('height', height);
+    video.setAttribute("width", width);
+    video.setAttribute("height", height);
 
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+    // for hiding arrow
+    var hidden = document.getElementById("arrow");
+    var buttonBar = document.getElementById("buttonBar");
+
     if (navigator.getUserMedia){
       navigator.getUserMedia({
         video: true,
@@ -39,52 +44,62 @@ var camera = (function(){
           video.mozSrcObject = stream;
         } else {
           video.src = window.URL.createObjectURL(stream); 
-        } initCanvas();
+        }
+        hidden.style.display = "none";
+        hidden.className = "";
+        buttonBar.className = "";
+        
+        initCanvas(); 
       }, errorCallback);
       };
   };
 
   function initCanvas(){
-    canvas = document.createElement("canvas");
-    canvas.setAttribute('width', width);
-    canvas.setAttribute('height', height);
+    // canvas = document.createElement("canvas");
+    canvas = document.getElementById("canvas");
+    canvas.setAttribute("width", width);
+    canvas.setAttribute("height", height);
     context = canvas.getContext("2d");
     
-    canvasOverlay = document.createElement("canvas");
-    canvasOverlay.setAttribute('width', width);
-    canvasOverlay.setAttribute('height', height);
-    canvasOverlay.style.position = "absolute";
-    canvasOverlay.style.top = '0';
-    canvasOverlay.style.zIndex = '100001';
-    canvasOverlay.style.display = 'block';
-    overlayContext = canvasOverlay.getContext('2d');
+    canvasOverlay = document.getElementById("canvasOverlay");
+    // canvasOverlay = document.createElement("canvas");
+    canvasOverlay.setAttribute("width", width);
+    canvasOverlay.setAttribute("height", height);
+    // canvasOverlay.style.position = "absolute";
+    // canvasOverlay.style.top = "0";
+    // canvasOverlay.style.zIndex = "100001";
+    // canvasOverlay.style.display = "block";
+    // canvasOverlay.className = "video";
+    overlayContext = canvasOverlay.getContext("2d");
     overlayContext.clearRect(0,0,width,height);
 
+    var button = document.getElementById("end_camera");
+    button.style.display = "block";
+    
     // countdownCanvas = document.createElement("canvas");
-    // countdownCanvas.setAttribute('width', 200);
-    // countdownCanvas.setAttribute('height', 100);
-    // countdownCanvas.style.display = 'block';
-    // countdownContext = countdownCanvas.getContext('2d');
+    // countdownCanvas.setAttribute("width", 200);
+    // countdownCanvas.setAttribute("height", 100);
+    // countdownCanvas.style.display = "block";
+    // countdownContext = countdownCanvas.getContext("2d");
     // countdownContext.clearRect(0,0,width,height);
 
-    vid.appendChild(canvas);
-    vid.appendChild(canvasOverlay);
+    // vid.appendChild(canvas);
+    // vid.appendChild(canvasOverlay);
     // countdownDiv.appendChild(countdownCanvas);
 
     rawDataGraph = new Rickshaw.Graph( {
       element: document.getElementById("rawDataGraph"),
       width: 200,
       height: 100,
-      renderer: 'line',
+      renderer: "line",
       min: -5,
-      interpolation: 'basis',
-      series: new Rickshaw.Series.FixedDuration([{ name: 'one' }], undefined, {
+      interpolation: "basis",
+      series: new Rickshaw.Series.FixedDuration([{ name: "one" }], undefined, {
         timeInterval: 1000/fps,
         maxDataPoints: 100,
         timeBase: new Date().getTime() / 1000
       })
     });
-
 
     startCapture();
   };
@@ -147,9 +162,11 @@ var camera = (function(){
         blueSum = forehead.data[i+2] + blueSum;
         
         // ** blurs video after head tracking **
-        border = document.getElementById("border");
-        canvas.className = 'blur';
-        border.className = 'border';
+        // border = document.getElementById("border");
+        // canvas.className = "video blur";
+        // border.className = "border";
+
+
         // // ** for green only **
         // greenSum = forehead.data[i+1] + greenSum;
       };
@@ -381,7 +398,7 @@ var camera = (function(){
   };
 
   var errorCallback = function(error){
-    console.log('something is wrong with the webcam!', error);
+    console.log("something is wrong with the webcam!", error);
   }; 
 
   return{
