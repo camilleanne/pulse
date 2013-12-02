@@ -1,23 +1,18 @@
-{% extends 'master.html' %}
+{% extends "master.html" %}
 {% block body %}
 		<div id="container">
 			<canvas id="overlay" width="600" height="300"></canvas>
 			<div id="graph"><svg></svg></div>
 			<h2 class="begin"><a href="{{url_for("get_heartrate")}}" class="begin"> begin <a></h2>
 			
-		<!-- <div>
-			<div id="arrow"></div>
-			<h2 id="allowWebcam">allow webcam</h2>
-		</div> -->
 		</div>
 
 	<script>
-
-		var ctx = document.getElementById('overlay').getContext("2d");
+		var ctx = document.getElementById("overlay").getContext("2d");
 		ctx.font = "Normal 210px 'BlurBold'";
 		ctx.fillStyle = "#E1F1F1"; 
 		ctx.fillRect(0,0,600,300); 
-		ctx.globalCompositeOperation = 'destination-out'; 
+		ctx.globalCompositeOperation = "destination-out"; 
 		ctx.fillText("pulse", 20, 210);
 
 		// displayGraph("#graph", 600, 200, 1000, 990)
@@ -42,7 +37,7 @@
 							.y(function(d) { 
 								return y(d); 
 							})
-							.interpolate('basis');
+							.interpolate("basis");
 			var lines = graph.selectAll(".lines").data(data).enter().append("g").attr("class", "lines");
 
 			lines.append("svg:path").attr("class", "line").attr("d", function(d) { return line(d); });
@@ -174,7 +169,7 @@
 		var color = d3.scale.linear()
 		    .domain([-1, 1])
 		    .interpolate(d3.interpolateRgb)
-		    .range(['#fff', '#000'])
+		    .range(["#fff", "#000"])
 
 		var opacity = d3.scale.linear()
 		    .domain([0, n])
