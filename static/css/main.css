@@ -4,12 +4,28 @@ body{
   background-color: #E1F1F1;
 }
 
+/* ------- index.html ------- */
+/* ## VIDEO ## */
+
 #vid {
 	clear: both;
   display:block;
   margin: auto;
   position: relative;
   width: 480px;
+  padding: 0 0 42px 0;
+}
+
+#canvas {
+  position: relative; 
+  display: inline-block;
+}
+
+#canvasOverlay {
+  position: absolute; 
+  top: 0px; 
+  z-index: 100001; 
+  display: block;
 }
 
 .blur{
@@ -18,24 +34,48 @@ body{
 }
 
 .border{
-  width: 450px;
-  height: 320px;
+  width: 460px;
+  height: 340px;
   border: 42px solid #E1F1F1;
   z-index: 100001;
-  left: -27px;
-  top: -10px;
+  right: -30px;
+  top: -30px;
+  position: absolute;
 }
 
 #border{
   position: absolute;
 }
 
+/* ## BUTTON ## */
+
 #end_camera{
-  text-align: center;
+  /*text-align: center;
   margin: auto;
-  display:block;
-  width: 100px;
+  display:none;
+  width: 100px;*/
 }
+
+button {
+  width: 100px;
+  display: inline-block;
+  height: 50px;
+  text-align: center;
+  background-color: #2B8A81;
+  border: none;
+  font-size: 1em;
+  float: left;
+  margin: 2px;
+}
+
+button:hover {
+  background-color: #BD640F;
+}
+button:visited, button:active{
+  background-color: #44A39D;
+}
+
+/* ## GRAPHS ## */
 
 path {
   stroke: steelblue;
@@ -63,11 +103,6 @@ path {
   float:left;
 }
 
-#heartbeat{
-  height: 200px;
-  width: 200px;
-}
-
 .axis {
   shape-rendering: crispEdges;
 }
@@ -80,7 +115,11 @@ path {
   display: none;
 }
 
-/* splash page */
+#heartbeat{
+  height: 200px;
+  width: 200px;
+}
+/* ## SPLASH PAGE ## */
 
 h1{
   font-family: "BlurBold";
@@ -96,12 +135,24 @@ h2{
   color: #0E0C09;
   letter-spacing: .05em;
 }
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover{
+  background-color: #2B8A81;
+  color: #E1F1F1;
+}
+
 #container{
   width: 600px;
   margin: 0 auto;
   display:block;
 
 }
+
 #overlay{
   position: absolute;
   top: 150px;
@@ -116,26 +167,27 @@ h2{
 
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
-a:hover{
-  background-color: #2B8A81;
-  color: #E1F1F1;
-  
+#hidden{
+  float: right;
+  margin: 0 60px 0 0;
+  /*display: none;*/
 
 }
+
+.hide {
+  display: none;
+}
+
 #arrow {
   margin: 50px 0;
   width: 0;
   height: 0;
   border-top: 200px solid #66A18B;
   border-left: 200px solid transparent;
-  -webkit-transform: rotate(-45deg);
+  /*-webkit-transform: rotate(-45deg);
   -moz-transform: rotate(-45deg);
   -ms-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);*/
   position: relative;
   display: block;
   }
@@ -156,8 +208,10 @@ a:hover{
 }
 
 #allowWebcam{
-  top: -20px;
+  top: -40px;
+  right: 100px;
   position: relative;
+  display: none;
 }
 
 #pulse{
@@ -165,16 +219,7 @@ a:hover{
   top: 100px;
 }
 
-.pulse{
-  animation-name: pulse;
-  -webkit-animation-name: pulse;  
-
-  animation-duration: 1.5s; 
-  -webkit-animation-duration: 1.5s;
-
-  animation-iteration-count: infinite;
-  -webkit-animation-iteration-count: infinite;
-}
+/* ## SPLASH PAGE GRAPH ## */
 #graph{
   width: 600px;
   height: 210px;
@@ -190,7 +235,21 @@ a:hover{
   stroke-width: 1.5px;
 }
 
-/* stolen from here: ______ */
+/* ## CSS Animations ##
+borrowed with love from: http://www.justinaguilar.com/animations/
+ */
+
+.pulse{
+  animation-name: pulse;
+  -webkit-animation-name: pulse;  
+
+  animation-duration: 1.5s; 
+  -webkit-animation-duration: 1.5s;
+
+  animation-iteration-count: infinite;
+  -webkit-animation-iteration-count: infinite;
+}
+
 @keyframes pulse {
   0% {
     transform: scale(0.9);
