@@ -57,7 +57,7 @@ def parse_ICA_results(ICA, buffer_window): #time
 	else:
 		signals["array"] = three
 
-	print power_ratio
+	# print power_ratio
 	# print signals
 	return signals
 
