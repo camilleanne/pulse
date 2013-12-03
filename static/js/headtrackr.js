@@ -146,6 +146,10 @@ headtrackr.Tracker = function(params) {
 	}
 	
 	this.init = function(video, canvas, context) {
+
+		// ** CT: Commented out because this functionality is in camera.js ** //
+
+
 		// if (!camera.cameraExists){
 		// 	console.log(camera.cameraExists+"ht")
 
@@ -221,6 +225,9 @@ headtrackr.Tracker = function(params) {
 		if (run) {
 			detector = window.setTimeout(track, params.detectionInterval);
 		}
+
+		//** CT: Redundant **//
+
 		// Copy video to canvas
 		
 		// canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
@@ -1611,10 +1618,10 @@ headtrackr.Ui = function() {
         p = document.createElement('p');
 	d.setAttribute('id', 'headtrackerMessageDiv');
 	
-	d.style.left = "20%";
-	d.style.right = "20%";
-	d.style.top = "30%";
-	d.style.fontSize = "90px";
+	d.style.left = "40%";
+	d.style.right = "40%";
+	d.style.top = "20%";
+	d.style.fontSize = "50px";
 	d.style.color = "#777";
 	d.style.position = "absolute";
 	d.style.fontFamily = "Helvetica, Arial, sans-serif";
@@ -1625,7 +1632,7 @@ headtrackr.Ui = function() {
 	d2.style.width = "100%";
 	d2.style.textAlign = "center";
 	d2.style.color = "#fff";
-	d2.style.backgroundColor = "#444";
+	d2.style.backgroundColor = "#44A39D";
 	d2.style.opacity = "0.5";
 	
 	p.setAttribute('id', 'headtrackerMessage');
@@ -1634,17 +1641,17 @@ headtrackr.Ui = function() {
 	document.body.appendChild(d);
   
   var supportMessages = {
-    "no getUserMedia" : "getUserMedia is not supported in your browser :(",
-    "no camera" : "no camera found :("
+    "no getUserMedia" : "getUserMedia is not supported in your browser",
+    "no camera" : "No camera found"
   };
   
   var statusMessages = {
-    "whitebalance" : "Waiting for camera whitebalancing",
+    "whitebalance" : "Whitebalancing camera...",
     "detecting" : "Please wait while camera is detecting your face...",
     "hints" : "We seem to have some problems detecting your face. Please make sure that your face is well and evenly lighted, and that your camera is working.",
-    "redetecting" : "Lost track of face, trying to detect again..",
-    "lost" : "Lost track of face :(",
-    "found" : "Face found! Move your head!"
+    "redetecting" : "Lost track of face, trying to detect again...",
+    "lost" : "Lost track of face",
+    "found" : "Face found!"
   };
   
   var override = false;

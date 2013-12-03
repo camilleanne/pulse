@@ -1,82 +1,191 @@
 {% extends "master.html" %}
 {% block body %}
+  <div id="movingParts">
+    <div id="hidden">
+        <div id="instructions"></div>
+        <div id="arrow" class="pulse"></div>
+        <h2 id="allowWebcam">allow webcam</h2>
+    </div>
+    <div id="vid" class="video">
+      <div id="border"></div>
 
-  <div id="hidden">
-      <div id="arrow" class="pulse"></div>
-      <h2 id="allowWebcam">allow webcam</h2>
-  </div>
-  <div id="vid" class="video">
-    <div id="border"></div>
+      <canvas id="canvas" class="video"></canvas>
+      <canvas id="canvasOverlay" class="video"></canvas>
+    </div>
 
-    <canvas id="canvas" class="video"></canvas>
-    <canvas id="canvasOverlay" class="video"></canvas>
-  </div>
-
-  <div id="buttonBar" class="hide">
-      <button id="end_camera" name="end_camera">Pause Camera</button>
-      <button id="blurToggle" name="blurToggle">Fade Video</button>
-      <button id="minToggle" name="minToggle">Minimize Video</button>
+    <div id="buttonBar" class="hide button">
+        <button id="end_camera" name="end_camera" class="button">Pause Camera</button>
+        <button id="blurToggle" name="blurToggle" class="button">Focus Video</button>
+        <button id="minToggle" name="minToggle" class="button">Minimize Video</button>
+        <!-- <button id="viewStats" name="viewStats" class="button">View Statistics</button> -->
+    </div>
   </div>
 
   <div id="heartbeat"></div>
-  <div id="rawDataGraph" class="graph"></div>
-  <div id="confidenceGraph" class="graph"></div>
+
+<!--   <div id="statistics" class="hide">
+    <div id="gender">
+      <button id="female" name="female" class="stats button gender">Female</button>
+      <button id="male" name="male" class="stats button gender">Male</button>
+    </div> 
+    <div id="ages">
+      <button id="18-25" name="18-25" class="stats age button">18 - 25</button>
+      <button id="26-35" name="26-35" class="stats age button">26 - 35</button>
+      <button id="36-45" name="36-45" class="stats age button">36 - 45</button>
+      <button id="46-55" name="46-55" class="stats age button">46 - 55</button>
+      <button id="56-65" name="56-65" class="stats age button">56 - 65</button>
+      <button id="65" name="65" class="stats age button">65 + </button>
+    </div>
+
+    <div id="health">
+      <div id="healthScore">
+        
+      </div>
+      <div id="healthGradient">
+        
+      </div>
+    </div>
+
+  </div> -->
+
+  <div id="graphs">
+    <div id="rawDataGraph" class="graph"></div>
+    <div id="confidenceGraph" class="graph"></div>
+  </div>
 
 
 
   <script src="/static/js/main.js"></script>
   <script>
 
+
+  </script>
+  <script>
+
     $( "#minToggle" ).click(function() {
       if ($("#minToggle").html() == "Minimize Video"){
-        var offset = $( ".video" ).offset()
-        debugger;
+        var delay = 1000;
         $( ".video" ).animate({
           width: 240,
           height: 180,
-          right: "+=" + offset.left + "px"
-        }, 1500 );
+          // width: 120,
+          // height: 90,
+          left: "-5px",
+          position: "absolute",
+          margin: "10px"
+        }, delay );
         $( "#border" ).animate({
           width: 225,
           height: 170,
-          right: "+=" + offset.left + "px",
-          top: "-=10px"
-        }, 1500 );
+          // width: 113,
+          // height: 85,
+          left: "-30px",
+          top: "-25px",
+          border: "22px solid #E1F1F1"
+        }, delay );
+        $("#buttonBar").animate({
+          left: "20px",
+          width: 160,
+          height: 220,
+          margin: "20px 0 0 10px"
+        }, delay, function(){
+        });
+        $("button").animate({
+          margin: 2,
+        }, delay);
+        $("#heartbeat").animate({
+          width: 600,
+          height: 600,
+          top: "-400px",
+          left: "35%"
+        }, delay);
+        $("#graphs").animate({
+          top: "-500px"
+        }, delay);
         $("#minToggle").html("Maximize Video");
+
       } else {
-        debugger;
-        var offset = $( ".video" ).offset()
+        var center = ($(window).width()/2) -  (480/2);
         $( ".video" ).animate({
-          width: 480,
-          height: 360,
-          right: "-=50px"
-        }, 1500 );
+          // width: 480,
+          // height: 360,
+          width: 380,
+          height: 285,
+          margin: "0 0 0 " + center + "px",
+        }, delay, function(){
+          $("#vid").css("position", "relative");
+          $("#canvas").css("position", "relative");
+          $(".video").css("margin", "0");
+          $(".video").css("left", "0");
+          $("#vid").css("margin", "auto");
+        });
         $( "#border" ).animate({
-          width: 460,
-          height: 340,
-          right: "-30px",
-          top: "-30px"
-        }, 1500 );
+          // width: 460,
+          // height: 340,
+          width: 360,
+          height: 270,
+          left: "-30px",
+          top: "-30px",
+        }, delay );
+        $("#buttonBar").animate({
+          left: "20px",
+          width: 385,
+          height: 60,
+          margin: "0 0 0 " + center + "px",
+        }, delay, function(){
+          $("#buttonBar").css("margin", "auto");
+        });
+        $("button").animate({
+          margin: "3.5px",
+        }, delay);
+        $("#heartbeat").animate({
+          width: 400,
+          height: 400,
+          top: "-400px",
+          left: "10%"
+        }, delay);
+        $("#graphs").animate({
+          top: "-200px"
+        }, delay);
         $("#minToggle").html("Minimize Video");
       }
       
     });
+
     $( "#blurToggle" ).click(function() {
       $( "#canvas" ).toggleClass("blur");
       $( "#border").toggleClass("border");
-      if ($("#border").position().top == "-10"){
-        $("#border").css("top", "-40px");
-      }
+      // if ($("#border").position().top == "-10"){
+      //   $("#border").css("top", "-40px");
 
+      // }
       var html = $("#blurToggle").html()
       if ($("#blurToggle").html() == "Fade Video"){
         $("#blurToggle").html("Focus Video");
       } else {
         $("#blurToggle").html("Fade Video");
       }
-     
-
     });
+
+    // $( "#viewStats" ).click(function() {
+    //   $( "#statistics").toggleClass("hide");
+      
+    //   var html = $("#viewStats").html()
+    //   if ($("#viewStats").html() == "View Statistics"){
+    //     $("#viewStats").html("Hide Statistics");
+    //   } else {
+    //     $("#viewStats").html("View Statistics");
+    //   }
+    // });
+
+    // $( ".gender" ).click(function() {
+    //   $(".gender").removeClass("active");
+    //   $(this).toggleClass("active");
+    // });
+    // $( ".age" ).click(function() {
+    //   $(".age").removeClass("active");
+    //   $(this).toggleClass("active");
+    // });
 
     $("#end_camera").click(function(){
       if ($("#end_camera").html() == "Pause Camera"){
@@ -84,9 +193,12 @@
       } else {
         $("#end_camera").html("Pause Camera");
       }
-
     });
 
+
+
   </script>
+
+
 
 {% endblock %}

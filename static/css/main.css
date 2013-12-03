@@ -1,5 +1,5 @@
 body{
-  font-family: "helvetica neue";
+  font-family: "helvetica neue", helvetica, sans-serif;
   font-size: 12px;
   background-color: #E1F1F1;
 }
@@ -12,13 +12,23 @@ body{
   display:block;
   margin: auto;
   position: relative;
-  width: 480px;
-  padding: 0 0 42px 0;
+  width: 380px;
+  height: 285px;
+  padding: 0 0 35px 0;
 }
 
 #canvas {
   position: relative; 
   display: inline-block;
+}
+
+.center {
+  margin: auto;
+  position: relative;
+}
+
+.clear {
+  margin: 0;
 }
 
 #canvasOverlay {
@@ -34,10 +44,17 @@ body{
 }
 
 .border{
-  width: 460px;
+/*  width: 460px;
   height: 340px;
   border: 42px solid #E1F1F1;
-  z-index: 100001;
+  z-index: 1001;
+  right: -30px;
+  top: -30px;
+  position: absolute;*/
+  width: 360px;
+  height: 270px;
+  border: 37px solid #E1F1F1;
+  z-index: 1;
   right: -30px;
   top: -30px;
   position: absolute;
@@ -57,7 +74,7 @@ body{
 }
 
 button {
-  width: 100px;
+  width: 120px;
   display: inline-block;
   height: 50px;
   text-align: center;
@@ -66,41 +83,68 @@ button {
   font-size: 1em;
   float: left;
   margin: 2px;
+  color: white;
 }
 
 button:hover {
-  background-color: #BD640F;
+  background-color: #DA755C;
 }
 button:visited, button:active{
   background-color: #44A39D;
 }
 
+.active {
+  background-color: #DA755C;
+}
+
+#buttonBar{
+  width: 385px;
+  margin: auto;
+  z-index: 10002;
+  position: relative;
+  right: -9px;
+
+}
+
 /* ## GRAPHS ## */
+
+#graphs {
+  position: relative;
+  top: -200px;
+  z-index: -1;
+  /*width: 1300px;*/
+  width: 95%;
+  margin: auto;
+  height: 200px;
+}
+#confidenceGraph {
+  width: 600px;
+  height: 160px;
+  margin: 20px;
+}
+
+.graph {
+  float: left;
+  margin: 20px;
+}
+
+#confidenceGraph {
+  float: left;
+}
+
+#heartbeat {
+  height: 400px;
+  width: 400px;
+  position: relative;
+  top: -400px;
+  left: 8%;
+  z-index: -1;
+}
 
 path {
   stroke: steelblue;
   stroke-width: 2;
   fill: none;
-}
-
-#confidenceGraph{
-  width: 600px;
-  height: 140px;
-  margin: 10px;
-}
-
-#countdown{
-	float: left;
-  margin: auto;
-}
-
-.graph{
-  float:left;
-  clear:both;
-}
-
-#confidenceGraph{
-  float:left;
 }
 
 .axis {
@@ -115,10 +159,64 @@ path {
   display: none;
 }
 
-#heartbeat{
-  height: 200px;
+/* ## STATISTICS BAR ## */
+
+/*#statistics{
+  height: 320px;
   width: 200px;
+  position: relative;
+  top: -675px;
+  left: 70%;
+  
+
 }
+.stats{
+  width: 70px;
+  float: left;
+  height: 40px;
+}
+
+#gender{
+  width: 190px;
+  height: 50px;
+  margin: 0 22px 0 22px;
+}
+#male, #female{
+  margin: 15px 3px 15px 3px;
+}
+#gender.stats{
+  margin: 5px;
+}
+#ages{
+  width: 200px;
+  height: 135px;
+}
+.age{
+  width: 70px;
+}
+#ages{
+  margin: 22px;
+
+}
+
+#healthScore {
+  background-color: white;
+  width: 146px;
+  height: 30px;
+  margin: 0 auto;
+  position: relative;
+}
+#healthGradient{
+  background: -prefix-linear-gradient(left, #44A3B4, #BD4356 );
+  background: linear-gradient(to right, #44A3B4, #BD4356);
+  width: 146px;
+  height: 30px;
+  top: 3px;
+  margin: 0 auto;
+  position: relative;
+}*/
+
+
 /* ## SPLASH PAGE ## */
 
 h1{
@@ -211,7 +309,7 @@ a:hover{
   top: -40px;
   right: 100px;
   position: relative;
-  display: none;
+  /*display: none;*/
 }
 
 #pulse{
@@ -279,3 +377,22 @@ borrowed with love from: http://www.justinaguilar.com/animations/
     opacity: 0.7; 
   }     
 }
+
+
+/* ## INSTRUCTIONS ## */
+
+#introduction{
+  display: none;
+  /*background-color: rgba( 68, 163, 157, 0.75);*/
+  /*background-color: rgba( 86, 196, 189, 0.75);*/
+  background-color: rgba( 225, 241, 241, 0.75);
+
+  width: 600px;
+  height: 500px;
+  z-index: 1002;
+  position: relative;
+  margin: auto;
+  top: -150px;
+}
+
+

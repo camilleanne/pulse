@@ -2,9 +2,9 @@ var camera = (function(){
   var htracker;
   var video, canvas, context, videoPause, canvasOverlay, overlayContext;
   var countdownCanvas, countdownContext, hrCanvas, hrContext, rawDataGraph;
-  var renderTimer, dataSend, workingBuffer;
-  var width = 480;
-  var height = 360;
+  var renderTimer, dataSend, workingBuffer, heartbeatTimer;
+  var width = 380;
+  var height = 285;
   var fps = 15;
   var heartrate = 60;
   var heartrateArray = [];
@@ -21,6 +21,7 @@ var camera = (function(){
   var circle, circleSVG, r;
   var toggle = 1;
   var hrAv = 65;
+  var blur = false;
 
   function initVideoStream(){
     video = document.createElement("video");
@@ -34,6 +35,7 @@ var camera = (function(){
     // for hiding arrow
     var hidden = document.getElementById("arrow");
     var buttonBar = document.getElementById("buttonBar");
+    var allowWebcam = document.getElementById("allowWebcam");
 
     if (navigator.getUserMedia){
       navigator.getUserMedia({
@@ -47,8 +49,10 @@ var camera = (function(){
         }
         hidden.style.display = "none";
         hidden.className = "";
-        buttonBar.className = "";
-        
+        allowWebcam.style.display = "none";
+
+        buttonBar.className = "button";
+
         initCanvas(); 
       }, errorCallback);
       };
@@ -89,14 +93,14 @@ var camera = (function(){
 
     rawDataGraph = new Rickshaw.Graph( {
       element: document.getElementById("rawDataGraph"),
-      width: 200,
-      height: 100,
+      width: 600,
+      height: 120,
       renderer: "line",
-      min: -5,
+      min: -2,
       interpolation: "basis",
       series: new Rickshaw.Series.FixedDuration([{ name: "one" }], undefined, {
         timeInterval: 1000/fps,
-        maxDataPoints: 100,
+        maxDataPoints: 300,
         timeBase: new Date().getTime() / 1000
       })
     });
@@ -162,10 +166,12 @@ var camera = (function(){
         blueSum = forehead.data[i+2] + blueSum;
         
         // ** blurs video after head tracking **
-        // border = document.getElementById("border");
-        // canvas.className = "video blur";
-        // border.className = "border";
-
+        if (blur == false){
+          border = document.getElementById("border");
+          canvas.className = "video blur";
+          border.className = "border";
+          blur = true;
+        }
 
         // // ** for green only **
         // greenSum = forehead.data[i+1] + greenSum;
@@ -266,32 +272,10 @@ var camera = (function(){
 
   };
 
-  var heartbeatTimer = setInterval(function(){
-    var duration = Math.round(((60/hrAv) * 1000)/4);
-    if (confidenceGraph){
-       if (toggle % 2 == 0){
-          circleSVG.select("circle")
-                 .transition()
-                 .attr("r", r)
-                 .duration(duration);
-        
-        } else {
-          circleSVG.select("circle")
-                 .transition()
-                 .attr("r", r + 10)
-                 .duration(duration);
-        }
-        if (toggle == 10){
-          toggle = 0;
-        }
-        toggle++;
-    }
-  }, Math.round(((60/hrAv) * 1000)/2));
-
   function heartbeatCircle(heartrate){
-    var cx = 100;
-    var cy = 100;
-    r = 60;
+    var cx = $("#heartbeat").width() / 2;
+    var cy = $("#heartbeat").width() / 2;
+    r = $("#heartbeat").width() / 4;
 
     if (circle) {
       circleSVG.select("text").text(heartrate >> 0);
@@ -299,8 +283,8 @@ var camera = (function(){
     } else {
       circleSVG = d3.select("#heartbeat")
                     .append("svg")
-                    .attr("width", 200)
-                    .attr("height", 200);
+                    .attr("width", cx * 2)
+                    .attr("height", cy * 2);
       circle = circleSVG.append("circle")
                         .attr("cx", cx)
                         .attr("cy", cy)
@@ -312,7 +296,7 @@ var camera = (function(){
                .attr("text-anchor", "middle")
                .attr("x", cx )
                .attr("y", cy + 10)
-               .attr("font-size", "20pt")
+               .attr("font-size", "22pt")
                .attr("fill", "white");    
     }
   }
@@ -378,6 +362,28 @@ var camera = (function(){
       }
 
     }, Math.round(1000));
+
+    heartbeatTimer = setInterval(function(){
+      var duration = Math.round(((60/hrAv) * 1000)/4);
+      if (confidenceGraph){
+         if (toggle % 2 == 0){
+            circleSVG.select("circle")
+                   .transition()
+                   .attr("r", r)
+                   .duration(duration);
+          
+          } else {
+            circleSVG.select("circle")
+                   .transition()
+                   .attr("r", r + 15)
+                   .duration(duration);
+          }
+          if (toggle == 10){
+            toggle = 0;
+          }
+          toggle++;
+        }
+    }, Math.round(((60/hrAv) * 1000)/2));
 
     headtrack();
   };
