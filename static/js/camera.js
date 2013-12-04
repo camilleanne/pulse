@@ -1,19 +1,17 @@
 var camera = (function(){
   var htracker;
   var video, canvas, context, videoPause, canvasOverlay, overlayContext;
-  var countdownCanvas, countdownContext, hrCanvas, hrContext, rawDataGraph;
+  var countdownCanvas, countdownContext, rawDataGraph;
   var renderTimer, dataSend, workingBuffer, heartbeatTimer;
   var width = 380;
   var height = 285;
   var fps = 15;
   var heartrate = 60;
-  var heartrateArray = [];
   var bufferWindow = 512;
   var sendingData = false;
   var red = [];
   var green = [];
   var blue = [];
-  // var time = [];
   var pause = false;
   var spectrum;
   var confidenceGraph, x, y, line, xAxis;
@@ -22,6 +20,7 @@ var camera = (function(){
   var toggle = 1;
   var hrAv = 65;
   var blur = false;
+  var graphing = false;
 
   function initVideoStream(){
     video = document.createElement("video");
@@ -32,7 +31,7 @@ var camera = (function(){
 
     window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
-    // for hiding arrow
+    // ** for showing/hiding arrow ** 
     var hidden = document.getElementById("arrow");
     var buttonBar = document.getElementById("buttonBar");
     var allowWebcam = document.getElementById("allowWebcam");
@@ -59,38 +58,21 @@ var camera = (function(){
   };
 
   function initCanvas(){
-    // canvas = document.createElement("canvas");
     canvas = document.getElementById("canvas");
     canvas.setAttribute("width", width);
     canvas.setAttribute("height", height);
     context = canvas.getContext("2d");
     
     canvasOverlay = document.getElementById("canvasOverlay");
-    // canvasOverlay = document.createElement("canvas");
     canvasOverlay.setAttribute("width", width);
     canvasOverlay.setAttribute("height", height);
-    // canvasOverlay.style.position = "absolute";
-    // canvasOverlay.style.top = "0";
-    // canvasOverlay.style.zIndex = "100001";
-    // canvasOverlay.style.display = "block";
-    // canvasOverlay.className = "video";
     overlayContext = canvasOverlay.getContext("2d");
     overlayContext.clearRect(0,0,width,height);
 
     var button = document.getElementById("end_camera");
     button.style.display = "block";
-    
-    // countdownCanvas = document.createElement("canvas");
-    // countdownCanvas.setAttribute("width", 200);
-    // countdownCanvas.setAttribute("height", 100);
-    // countdownCanvas.style.display = "block";
-    // countdownContext = countdownCanvas.getContext("2d");
-    // countdownContext.clearRect(0,0,width,height);
 
-    // vid.appendChild(canvas);
-    // vid.appendChild(canvasOverlay);
-    // countdownDiv.appendChild(countdownCanvas);
-
+    // ** displays raw data (difference in pixel averages over time sampled 15 times a second) ** 
     rawDataGraph = new Rickshaw.Graph( {
       element: document.getElementById("rawDataGraph"),
       width: 600,
@@ -105,6 +87,8 @@ var camera = (function(){
       })
     });
 
+
+
     startCapture();
   };
 
@@ -113,12 +97,12 @@ var camera = (function(){
     htracker.init(video, canvas, context);
     htracker.start();
 
-    // for each facetracking event received draw rectangle around tracked face on canvas
+    // ** for each facetracking event received draw rectangle around tracked face on canvas ** 
     document.addEventListener("facetrackingEvent", greenRect)
   };
 
   function greenRect(event) {
-    // clear canvas
+    // ** clear canvas ** 
     overlayContext.clearRect(0,0,width,height);
 
     var sx, sy, sw, sh, forehead, inpos, outpos;
@@ -128,7 +112,7 @@ var camera = (function(){
     
     // ** approximating forehead based on facetracking ** 
     sx = event.x + (-(event.width/5)) + 20 >> 0;
-    sy = event.y + (-(event.height/3)) >> 0;
+    sy = event.y + (-(event.height/3)) + 10 >> 0;
     sw = (event.width/5) >> 0;
     sh = (event.height/10) >> 0;
 
@@ -139,7 +123,7 @@ var camera = (function(){
       overlayContext.strokeStyle = "#00CC00";
       overlayContext.strokeRect(event.x + (-(event.width/2)) >> 0, event.y + (-(event.height/2)) >> 0, event.width, event.height);
       
-      //  ** blue forehead box (for debugging) ** 
+      //  ** for debugging: blue forehead box ** 
       overlayContext.strokeStyle = "#33CCFF";       
       overlayContext.strokeRect(sx, sy, sw, sh);
 
@@ -153,41 +137,41 @@ var camera = (function(){
         // var blue = forehead.data[i+2];
         // var alpha = forehead.data[i+3];
 
-        //  ** for putting a green video image on screen ** 
+        //  ** for debugging: puts a green video image on screen ** 
         // forehead.data[i] = 0;
         // forehead.data[i + 1] = forehead.data[i]
         // forehead.data[i + 2] = 0;
 
         // ** get sum of green area for each frame **
-
-        // ** for three channel & ICA **
+        // ** FOR RGB CHANNELS & ICA **
         redSum = forehead.data[i] + redSum;
         greenSum = forehead.data[i+1] + greenSum;
         blueSum = forehead.data[i+2] + blueSum;
         
         // ** blurs video after head tracking **
         if (blur == false){
-          border = document.getElementById("border");
+          var border = document.getElementById("border");
           canvas.className = "video blur";
           border.className = "border";
           blur = true;
+          minimizeVideo();
         }
 
-        // // ** for green only **
+        // // ** TOGGLE FOR GREEN CHANNEL ONLY **
         // greenSum = forehead.data[i+1] + greenSum;
       };
 
       // ** get average of green area for each frame **
 
-      // ** for three channel & ICA **
+      // ** FOR RGB CHANNELS & ICA **
       var redAverage = redSum/(forehead.data.length/4);
       var greenAverage = greenSum/(forehead.data.length/4);
       var blueAverage = blueSum/(forehead.data.length/4);
 
-      // // ** for green only **
+      // //  ** TOGGLE FOR GREEN CHANNEL ONLY **
       // var greenAverage = greenSum/(forehead.data.length/4);
 
-      // // ** for green only **
+      // //  ** TOGGLE FOR GREEN CHANNEL ONLY **
       // if (green.length < bufferWindow){
       //     green.push(greenAverage);
       //   if (green.length > bufferWindow/8){
@@ -198,7 +182,7 @@ var camera = (function(){
       //   green.shift();
       // }
 
-      // ** for three channel & ICA **
+      // ** FOR RGB CHANNELS & ICA **
       if (green.length < bufferWindow){
           red.push(redAverage);
           green.push(greenAverage);
@@ -214,18 +198,24 @@ var camera = (function(){
         blue.push(blueAverage);
         blue.shift();
       }
-
+      
       graphData = {one: normalize(green)[green.length-1]}
       rawDataGraph.series.addData(graphData);
-      rawDataGraph.render();
+      rawDataGraph.update();
 
-      // ** for putting green video image on screen **
+      if (graphing === false){
+        var rickshawAxis = document.getElementById("rawDataLabel");
+        rickshawAxis.style.display = "block";
+        graphing = true;
+      }
+
+      heartbeatCircle(heartrate);
+
+      // ** for debugging: puts green video image on screen **
       // overlayContext.putImageData(forehead, sx, sy);
 
       overlayContext.rotate((Math.PI/2)-event.angle);
-
     }
-
   };
 
   function drawCountdown(array){
@@ -237,29 +227,34 @@ var camera = (function(){
   };
 
 
-  function cardiac(averagePixelArray, bfwindow){
+  function cardiac(array, bfwindow){
+    // ** if using Green Channel, you can normalize data in the browser: ** 
+    // var normalized = normalize(array);
+    // var normalized = array;
 
-    // var normalized = normalize(averagePixelArray);
-    // var normalized = averagePixelArray;
-
-    // ** fast fourier transform from dsp.js **
+    // // ** fast fourier transform from dsp.js **
+    // // ** if using green channel, you can run fft in the browser: **
     // var fft = new RFFT(bfwindow, fps);
     // fft.forward(normalized);
     // spectrum = fft.spectrum;
 
-    spectrum = averagePixelArray;
+    // ** if FFT is done on server, set spectrum to that array **
+    spectrum = array;
 
     var freqs = frequencyExtract(spectrum, fps);
     var freq = freqs.freq_in_hertz;
     heartrate = freq * 60;
-    heartrateArray.push(heartrate);
-
+    
+    // //** TOGGLE FOR GREEN CHANNEL ONLY **
     // graphData = {one: green[green.length-1]}
     // graph.series.addData(graphData);
     // graph.render();
-    showConfidenceGraph(freqs, 600, 100);
-    heartbeatCircle(heartrate);
 
+    showConfidenceGraph(freqs, 600, 100);
+    
+
+    // ** create an average of the last five heartrate 
+    // measurements for the pulsing circle ** 
     if (heartrateAverage.length < 3){
         heartrateAverage.push(heartrate);
         hrAV = heartrate;
@@ -268,8 +263,6 @@ var camera = (function(){
       heartrateAverage.shift();
       hrAv = mean(heartrateAverage);
     }
-
-
   };
 
   function heartbeatCircle(heartrate){
@@ -290,19 +283,18 @@ var camera = (function(){
                         .attr("cy", cy)
                         .attr("r", r)
                         .attr("fill", "#DA755C");
-
       circleSVG.append("text")
                .text(heartrate >> 0)
                .attr("text-anchor", "middle")
                .attr("x", cx )
                .attr("y", cy + 10)
-               .attr("font-size", "22pt")
-               .attr("fill", "white");    
+               .attr("font-size", "26pt")
+               .attr("fill", "white");   
     }
   }
 
   function showConfidenceGraph(data, width, height){
-    // x == filteredFreqBin, y == normalizedFreqs
+    // **  x == filteredFreqBin, y == normalizedFreqs ** 
     var max = _.max(data.normalizedFreqs);
     data.filteredFreqBin = _.map(data.filteredFreqBin, function(num){return num * 60});
     var data = _.zip(data.normalizedFreqs, data.filteredFreqBin);
@@ -324,7 +316,7 @@ var camera = (function(){
       
       confidenceGraph.append("svg:path").attr("d", line(data)).attr("class", "line");
       confidenceGraph.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
-      confidenceGraph.append("text").attr("x", width - 6).attr("y", height - 6).style("text-anchor", "end").text("confidence in BPM");
+      confidenceGraph.append("text").attr("x", 235).attr("y", height + 40).style("text-anchor", "end").text("Confidence in frequency in BPM").attr("font-size", "12pt").attr("fill", "steelblue");
     }
   }
 
@@ -337,6 +329,8 @@ var camera = (function(){
 
   function startCapture(){
     video.play();
+
+    // ** if the video is paused, reset everything so that the data collection process restarts ** 
     if (pause == true){
       pause = false;
       red = [];
@@ -345,24 +339,28 @@ var camera = (function(){
       confidenceGraph = null;
       clearConfidenceGraph();
     }
-   
+    
+    // ** set the framerate and draw the video the canvas at the desired fps ** 
     renderTimer = setInterval(function(){
         context.drawImage(video, 0, 0, width, height);
       }, Math.round(1000 / fps));
 
+
+    // ** send data via websocket to the python server ** 
     dataSend = setInterval(function(){
-      // // ** for green only **
+      // //  ** TOGGLE FOR GREEN CHANNEL ONLY **
       // if (sendingData){
       //   sendData(JSON.stringify({"array": green, "bufferWindow": green.length}));
       // }
-
-      // ** for three channel & ICA **
+      // ** FOR RGB CHANNELS & ICA **
       if (sendingData){
         sendData(JSON.stringify({"array": [red, green, blue], "bufferWindow": green.length}));
       }
 
     }, Math.round(1000));
 
+    // ** pulse the round cirle containing the heartrate 
+    // to an average of the last five heartrate measurements **
     heartbeatTimer = setInterval(function(){
       var duration = Math.round(((60/hrAv) * 1000)/4);
       if (confidenceGraph){
@@ -371,7 +369,6 @@ var camera = (function(){
                    .transition()
                    .attr("r", r)
                    .duration(duration);
-          
           } else {
             circleSVG.select("circle")
                    .transition()
@@ -385,10 +382,13 @@ var camera = (function(){
         }
     }, Math.round(((60/hrAv) * 1000)/2));
 
+
+    // ** begin headtracking! ** 
     headtrack();
   };
 
   function pauseCapture(){
+    // ** clears timers so they don't continue to fire ** 
     if (renderTimer) clearInterval(renderTimer);
     if (dataSend) clearInterval(dataSend);
     if (heartbeatTimer) clearInterval(heartbeatTimer);
@@ -397,7 +397,7 @@ var camera = (function(){
     sendingData = false;
     video.pause();
 
-    //removes the event listener and stops headtracking
+    // ** removes the event listener and stops headtracking ** 
     document.removeEventListener("facetrackingEvent", greenRect);
     htracker.stop();
 
