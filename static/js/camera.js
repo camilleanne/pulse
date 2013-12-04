@@ -209,8 +209,6 @@ var camera = (function(){
         graphing = true;
       }
 
-      heartbeatCircle(heartrate);
-
       // ** for debugging: puts green video image on screen **
       // overlayContext.putImageData(forehead, sx, sy);
 
@@ -251,8 +249,8 @@ var camera = (function(){
     // graph.render();
 
     showConfidenceGraph(freqs, 600, 100);
+    heartbeatCircle(heartrate);
     
-
     // ** create an average of the last five heartrate 
     // measurements for the pulsing circle ** 
     if (heartrateAverage.length < 3){
