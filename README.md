@@ -9,6 +9,8 @@ Pulse works because changes in blood volume in the face during the cardiac cycle
 
 The process blog for this project is here: [Camille Codes](http://camillecodes.tumblr.com) Click through for more detailed explanations of the process and technology.
 
+![Pulse](http://media.tumblr.com/85a9503e99bac31876e5df188601bee8/tumblr_inline_mx648t49V21qmslbg.png)
+
 ### Technology
 
 ##### Short Roundup
