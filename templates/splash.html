@@ -6,15 +6,19 @@
 			<h2 class="begin"><a href="#" class="begin" id="beginButton"> begin </a></h2>
 		
 		<div id="introduction">
-			<a href="#" id="next">Next</a>
-			<a href="{{url_for("get_heartrate")}}">(Skip)</a>
+			<a href="#" id="next">NEXT</a>
+			<a href="{{url_for("get_heartrate")}}" id="skip">(SKIP)</a>
 
 		</div>
 		</div>
 
 
 	<script type="text/javascript">
-		// var div, instruct, 
+		// ** INSTRUCTIONS FOR APP **
+		// When begin is clicked, this displays a div 
+		// where the user can click through some basic
+		// tips and instructions
+
 		var begin = document.getElementById("beginButton");
 		var div = document.getElementById("introduction");
 		begin.addEventListener("click", showInstructions);
@@ -22,35 +26,41 @@
 		var instruct = document.createElement("h3");
 		instruct.className = "instruct";
 
-		var instructions = ["Welcome to Pulse! <br>Pulse derives a heartrate from your webcam. It is able to do this because there are subtle differences in the light reflected off of your skin when blood pumps beneath it. Here are some tips.", "1. Sit centered to the camera and avoid backlighting. Pulse uses a headtracking algorithm so will keep collecting data if you move around, but leaving the frame or showing Pulse too much of a profile will cause it some confusion.", "2. Pulse collects data from the center of your forehead, so pull back any hair that could be covering that area.","3. It takes Pulse about 10 seconds to gather enough data to begin calculating a heartrate, so be patient. Pulse is most accurate after 30 seconds, so use this time to take a few deep breaths!", "4. The video will be blurred so you don't get distracted, but you can focus the video if you feel like it (you vain thing, you).", "5. Want to learn more about the science behind Pulse? Check it out on github! (follow the 'about' link on the next page)", "6. Relax!"];
+		var instructions = ["<span class='bold'>Welcome to <span class='blurFont'>pulse</span>!</span> <br><br><span class='blurFont'>pulse</span> derives your heartrate from your webcam. It is able to do this because there are subtle differences in the light reflected off of your skin when blood pumps beneath it.<br><br> Here are some tips for best results.", "<span class='num'>1</span> <br><br>Sit centered to the camera and avoid backlighting. <br><br><span class='blurFont'>pulse</span> uses a headtracking algorithm and will keep collecting data if you move around, but leaving the frame or showing <span class='blurFont'>pulse</span> too much of a profile will cause it some confusion.", "<span class='num'>2</span><br><br> <span class='blurFont'>pulse</span> collects data from the center of your forehead, so pull back any hair that could be covering that area.","<span class='num'>3</span><br><br> It takes <span class='blurFont'>pulse</span> about 10 seconds to gather enough data to start, so be patient. <br><br><span class='blurFont'>pulse</span> is most accurate after 30 seconds, so use this time to take a few deep breaths!", "<span class='num'>4</span><br><br> The video will be blurred so you don't get distracted, but you can refocus it if you feel like it (you vain thing, you).", "<span class='num'>5</span> <br><br>Want to learn more about the science behind <span class='blurFont'>pulse</span>? <br><br>Check it out on <a href='http://github.com/camilleanne/biofeedback' target='_blank' class='bold' id='github'>github</a>!", "Relax!"];
+		
 		var index = 0;
-		debugger;
+		
 		instruct.innerHTML = instructions[index];
 		instruct.setAttribute("id", index);
 
-		div.appendChild(instruct);
-
 		var next = document.getElementById("next");
+
+		div.insertBefore(instruct, div.firstChild)
+		// div.appendChild(instruct);
 
 		next.addEventListener("click", function(){
 			index++
 			console.log(index)
 			instruct.innerHTML= instructions[index];
 			instruct.setAttribute("id", index);
-			if (index > instructions.length){
-				//REROUTE TO /begin 
+			if (index > instructions.length-2){
+				next.innerHTML = "Begin!"
+				next.href = "{{url_for('get_heartrate')}}"
 			}
 		});
 
-
 		function showInstructions(){
-			var div = document.getElementById("introduction");
 			div.style.display = "block";
+			begin.style.display = "none";
 		};
-
 
 	</script>
 	<script>
+		// ** LOGO and ANIMATION **
+		// Creates a canvas overlay for the sine wave
+		// visualization in the shape of the pulse logo
+		// displayGraph() is a previous iteration of an 
+		// animated graph to display under the logo
 		var ctx = document.getElementById("overlay").getContext("2d");
 		ctx.font = "Normal 210px 'BlurBold'";
 		ctx.fillStyle = "#E1F1F1"; 
