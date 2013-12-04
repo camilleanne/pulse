@@ -7,7 +7,8 @@ Pulse is based on techniques outlined in ["Non-contact, automated cardiac pulse 
 
 Pulse works because changes in blood volume in the face during the cardiac cycle modify the amount of ambient light reflected by the blood vessels. This change in brightness can be picked up as a periodic signal by a webcam. It is most prominent in the green channel, but using independent component analysis (ICA), an even more prominent signal can be extracted from a combination of the red, blue, and green channels.
 
-The process blog for this project is here: [Camille Codes](http://camillecodes.tumblr.com) Click through for more detailed explanations of the process and technology.
+The process blog for this project is here: [Camille Codes](http://camillecodes.tumblr.com)
+Click through for more detailed explanations of the process and technology.
 
 ![Pulse](http://media.tumblr.com/85a9503e99bac31876e5df188601bee8/tumblr_inline_mx648t49V21qmslbg.png)
 
@@ -47,7 +48,7 @@ Data is normalized, run through ICA (ct_jade.py) and FFT and filtered by the pow
 
 
 
-Pulse is supported by:
+####Pulse is supported by:
 
 [Headtrackr.js](https://github.com/auduno/headtrackr/) is currently doing the heavy lifting for the facetracking.
 
