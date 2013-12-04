@@ -5,13 +5,12 @@ import json
 def parse_RGB(message):
 	buffer_window = message["bufferWindow"]
 
-	# # ** for green channel only **
+	# # ** FOR GREEN CHANNEL ONLY **
 	# X = np.array(message["array"])
 	# X = normalize_array(X)
 	# return json.dumps(parse_ICA_results(X, buffer_window))
 
-
-	# ** for 3 channels with ICA**
+	# ** FOR RGB CHANNELS & ICA **
 	X = np.ndarray(shape = (3, buffer_window), buffer= np.array(message["array"]))
 	X = normalize_matrix(X)
 	ICA = ct_jade.main(X)
@@ -25,7 +24,7 @@ def parse_ICA_results(ICA, buffer_window): #time
 	signals["id"] = "ICA"
 	signals["bufferWindow"] = buffer_window
 
-	# ** for 3 channels with ICA**
+	# ** FOR RGB CHANNELS & ICA **
 	one = np.squeeze(np.asarray(ICA[:, 0])).tolist()
 	two = np.squeeze(np.asarray(ICA[:, 1])).tolist()
 	three = np.squeeze(np.asarray(ICA[:, 2])).tolist()
@@ -38,12 +37,9 @@ def parse_ICA_results(ICA, buffer_window): #time
 	# print "two: ", two.astype(float).tolist()
 	# print "three: ", three.astype(float).tolist()
 
-
 	one = np.absolute(np.square(np.fft.irfft(one))).astype(float).tolist()
 	two = np.absolute(np.square(np.fft.irfft(two))).astype(float).tolist()
 	three = np.absolute(np.square(np.fft.irfft(three))).astype(float).tolist()
-
-
 
 	power_ratio = [0, 0, 0]
 	power_ratio[0] = np.sum(one)/np.amax(one)
@@ -61,7 +57,7 @@ def parse_ICA_results(ICA, buffer_window): #time
 	# print signals
 	return signals
 
-	# # #** for green channel only **
+	# # ** FOR GREEN CHANNEL ONLY **
 	# hamming = (np.hamming(len(ICA)) * ICA)
 	# fft = np.fft.rfft(hamming)
 	# fft = np.absolute(np.square(fft))

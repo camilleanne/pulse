@@ -10,10 +10,6 @@ sockets = Sockets(app)
 def index():
 	return render_template("splash.html")
 
-@app.route("/introduction")
-def introduction():
-	return render_template("intro.html")
-
 @app.route("/begin")
 def get_heartrate():
 	return render_template("index.html")
