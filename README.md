@@ -11,6 +11,12 @@ Based on techniques outlined in ["Non-contact, automated cardiac pulse measureme
 
 [underscore.js](https://github.com/jashkenas/underscore) is helping with some of the utilities needed for computation.
 
+Setup
+-----------
+
+    $ pip install flask_sockets gunicorn
+    $ ./deploy.sh
+
 
 TO DO:
 ===========
