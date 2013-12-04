@@ -66,13 +66,6 @@ body{
 
 /* ## BUTTON ## */
 
-#end_camera{
-  /*text-align: center;
-  margin: auto;
-  display:none;
-  width: 100px;*/
-}
-
 button {
   width: 120px;
   display: inline-block;
@@ -147,6 +140,18 @@ path {
   fill: none;
 }
 
+#rawDataLabel {
+  font-size: 12pt;
+  color: steelblue;
+  position: relative;
+ /* top: -75px;
+  float: left;
+  right: -20px;*/
+  display: none;
+  right: 625px;
+  top: 175px;
+}
+
 .axis {
   shape-rendering: crispEdges;
 }
@@ -159,67 +164,10 @@ path {
   display: none;
 }
 
-/* ## STATISTICS BAR ## */
-
-/*#statistics{
-  height: 320px;
-  width: 200px;
-  position: relative;
-  top: -675px;
-  left: 70%;
-  
-
-}
-.stats{
-  width: 70px;
-  float: left;
-  height: 40px;
-}
-
-#gender{
-  width: 190px;
-  height: 50px;
-  margin: 0 22px 0 22px;
-}
-#male, #female{
-  margin: 15px 3px 15px 3px;
-}
-#gender.stats{
-  margin: 5px;
-}
-#ages{
-  width: 200px;
-  height: 135px;
-}
-.age{
-  width: 70px;
-}
-#ages{
-  margin: 22px;
-
-}
-
-#healthScore {
-  background-color: white;
-  width: 146px;
-  height: 30px;
-  margin: 0 auto;
-  position: relative;
-}
-#healthGradient{
-  background: -prefix-linear-gradient(left, #44A3B4, #BD4356 );
-  background: linear-gradient(to right, #44A3B4, #BD4356);
-  width: 146px;
-  height: 30px;
-  top: 3px;
-  margin: 0 auto;
-  position: relative;
-}*/
-
-
+/* ------- splash.html ------- */
 /* ## SPLASH PAGE ## */
 
-h1{
+h1 {
   font-family: "BlurBold";
   font-weight: normal;
   font-size: 13em;
@@ -227,7 +175,7 @@ h1{
   letter-spacing: .05em;
 }
 
-h2{
+h2 {
   font-family: "hero light";
   font-size: 2.3em;
   color: #0E0C09;
@@ -239,19 +187,19 @@ a {
   color: inherit;
 }
 
-a:hover{
+a:hover {
   background-color: #2B8A81;
   color: #E1F1F1;
 }
 
-#container{
+#container {
   width: 600px;
   margin: 0 auto;
   display:block;
 
 }
 
-#overlay{
+#overlay {
   position: absolute;
   top: 150px;
 }
@@ -265,7 +213,7 @@ a:hover{
 
 }
 
-#hidden{
+#hidden {
   float: right;
   margin: 0 60px 0 0;
   /*display: none;*/
@@ -305,20 +253,20 @@ a:hover{
   -o-transform: rotate(-45deg);
 }
 
-#allowWebcam{
+#allowWebcam {
   top: -40px;
   right: 100px;
   position: relative;
   /*display: none;*/
 }
 
-#pulse{
+#pulse {
   position: relative;
   top: 100px;
 }
 
 /* ## SPLASH PAGE GRAPH ## */
-#graph{
+#graph {
   width: 600px;
   height: 210px;
   position: relative;
@@ -327,7 +275,7 @@ a:hover{
   z-index: -1;
   background-color: #DA755C;
 }
-.waveform{
+.waveform {
   fill: none;
   stroke: white;
   stroke-width: 1.5px;
@@ -337,7 +285,7 @@ a:hover{
 borrowed with love from: http://www.justinaguilar.com/animations/
  */
 
-.pulse{
+.pulse {
   animation-name: pulse;
   -webkit-animation-name: pulse;  
 
@@ -381,18 +329,59 @@ borrowed with love from: http://www.justinaguilar.com/animations/
 
 /* ## INSTRUCTIONS ## */
 
-#introduction{
+#introduction {
   display: none;
-  /*background-color: rgba( 68, 163, 157, 0.75);*/
-  /*background-color: rgba( 86, 196, 189, 0.75);*/
   background-color: rgba( 225, 241, 241, 0.75);
-
-  width: 600px;
-  height: 500px;
+  width: 550px;
+  height: 400px;
   z-index: 1002;
   position: relative;
   margin: auto;
   top: -150px;
+  padding: 25px;
 }
 
+h3 {
+  font-family: "hero light";
+  font-size: 2.3em;
+  /*color: #0E0C09;*/
+  color: #3E3D45;
+  line-height: 1.12em;
+}
 
+.num {
+  font-family: "BlurMedium";
+  border-radius: 50%;
+  padding: 10px 20px 10px 20px;
+  background-color: #44A39D;
+  text-align: center;
+  color: #E1F1F1;
+  width: 10px;
+  height: 10px;
+}
+
+#next, #skip {
+  font-family: "Hero";
+  font-size: 1.5em;
+  color: #3E3D45;
+  padding: 10px;
+  position: absolute;
+  bottom: 0;
+}
+
+#next:hover, #skip:hover {
+  background-color: #2B8A81;
+  color: #E1F1F1;
+}
+
+#next {
+  left: 525px;
+}
+
+.bold {
+  font-family: 'hero';
+}
+
+.blurFont {
+  font-family: "BlurMedium";
+}
