@@ -10,13 +10,15 @@ Pulse works because changes in blood volume in the face during the cardiac cycle
 The process blog for this project is here: [Camille Codes](http://camillecodes.tumblr.com)
 Click through for more detailed explanations of the process and technology.
 
-![Pulse](http://media.tumblr.com/85a9503e99bac31876e5df188601bee8/tumblr_inline_mx648t49V21qmslbg.png)
+![Pulse](https://github.com/camilleanne/biofeedback/blob/master/resources/screenshot_splash.png)
 
 ### Technology
 
 ##### Short Roundup
 
 Facial recognition, pixel manipulation, and some frequency extraction are done in Javascript, and there is a Python backend for Independent Component Analysis (JADE algorithm) and Fast Fourier Transform. This project runs on Javascript, HTML5 Canvas, and WebRTC, Python ( & NumPy), D3js, Rickshaw, with a splash of Flask, web sockets, and Jinja.
+
+![Pulse](https://github.com/camilleanne/biofeedback/blob/master/resources/screenshot_min1.png)
 
 
 ##### Detailed Explanation
@@ -46,6 +48,7 @@ Some functions for signal processing and math used by (camera.js).
 Data is normalized, run through ICA (ct_jade.py) and FFT and filtered by the power density ratio.
 
 
+![Pulse](https://github.com/camilleanne/biofeedback/blob/master/resources/screenshot_info3.png)
 
 
 ####Pulse is supported by:
