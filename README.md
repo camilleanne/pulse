@@ -21,7 +21,7 @@ Facial recognition, pixel manipulation, and some frequency extraction are done i
 
 ##### Detailed Explanation
 
-Pulse brings in the webcam from the user with getUserMedia and draws it on the canvas at 15 frames a second. It then looks for a face and begins tracking the head with headtrackr.js (uses the Viola-Jones algorithm). A region of interest (ROI) is selected from the forehead hased on the tracked head area. For each frame, the red, blue, and green values for the ROI are extracted from the canvas and averaged for the ROI. This average value for each channel is put into a time series array and send via websocket (flask_sockets) to a python server. 
+Pulse brings in the webcam from the user with getUserMedia and draws it on the canvas at 15 frames a second. It then looks for a face and begins tracking the head with headtrackr.js (uses the Viola-Jones algorithm). A region of interest (ROI) is selected from the forehead hased on the tracked head area. For each frame, the red, blue, and green values for the ROI are extracted from the canvas and averaged for the ROI. This average value for each channel is put into a time series array and sent via websocket (flask_sockets) to a python server. 
 
 On the server the data is normalized and run though independent component analysis (JADE algorithm) to isolate the heartbeat from the three signals. Since the order of the independent components is arbitrary, using NumPy a Fast Fourier Transform is applied to each one and the resulting spectrum is filtered by the power density ratio. The component with the highest ratio is selected as the most likely to contain a heartbeat and passed back to the browser via the websocket.
 
