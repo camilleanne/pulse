@@ -8,7 +8,7 @@ body{
   font-family: "BlurBold";
   src: local("BlurBold"),
   local("Blur Bold"),
-  url(/fonts/BlurBold.otf);
+  url(BlurBold.otf);
   /*font-weight: bold;*/
 }
 
@@ -16,20 +16,20 @@ body{
   font-family: "BlurMedium";
   src: local("BlurMedium"),
   local("Blur Medium"),
-  url(/fonts/BlurMedium.otf);
+  url(BlurMedium.otf);
 }
 
 @font-face {
   font-family: "Hero Light";
   src: local("Hero Light"),
   local("HeroLight"),
-  url(/fonts/HeroLight.otf);
+  url(HeroLight.otf);
 }
 @font-face {
   font-family: "Hero";
   src: local("Hero"),
   local("Hero"),
-  url(/fonts/Hero.otf);
+  url(Hero.otf);
 }
 
 /* ------- index.html ------- */
@@ -202,7 +202,7 @@ path {
 /* ## SPLASH PAGE ## */
 
 h1 {
-  font-family: "BlurBold";
+  font-family: "BlurBold", Chango, sans-serif;
   font-weight: normal;
   font-size: 13em;
   color: #8FA1A3;
@@ -210,7 +210,7 @@ h1 {
 }
 
 h2 {
-  font-family: "Hero light";
+  font-family: "Hero Light", Helvetica, sans-serif;
   font-size: 2.3em;
   color: #0E0C09;
   letter-spacing: .05em;
@@ -384,7 +384,7 @@ borrowed with love from: http://www.justinaguilar.com/animations/
 }
 
 h3 {
-  font-family: "Hero light";
+  font-family: "Hero Light", Helvetica, sans-serif;
   font-size: 2.3em;
   /*color: #0E0C09;*/
   color: #3E3D45;
@@ -392,7 +392,7 @@ h3 {
 }
 
 .num {
-  font-family: "BlurMedium";
+  font-family: "BlurMedium", "Chango", sans-serif;
   border-radius: 50%;
   padding: 10px 20px 10px 20px;
   background-color: #44A39D;
@@ -403,7 +403,7 @@ h3 {
 }
 
 #next, #skip {
-  font-family: "Hero";
+  font-family: "Hero", Helvetica, sans-serif;
   font-size: 1.5em;
   color: #3E3D45;
   padding: 10px;
@@ -421,9 +421,9 @@ h3 {
 }
 
 .bold {
-  font-family: 'Hero';
+  font-family: 'Hero', Helvetica, sans-serif;
 }
 
 .blurFont {
-  font-family: "BlurMedium";
+  font-family: "BlurMedium", Chango, sans-serif;
 }
