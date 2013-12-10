@@ -8,7 +8,7 @@ body{
   font-family: BlurBold;
   src: local("BlurBold"),
   local("Blur Bold"),
-  url(fonts/BlurBold.otf);
+  url(/fonts/BlurBold.otf);
   /*font-weight: bold;*/
 }
 
@@ -16,20 +16,20 @@ body{
   font-family: BlurMedium;
   src: local("BlurMedium"),
   local("Blur Medium"),
-  url(fonts/BlurMedium.otf);
+  url(/fonts/BlurMedium.otf);
 }
 
 @font-face {
   font-family: "Hero Light";
   src: local("Hero Light"),
   local("HeroLight"),
-  url(fonts/HeroLight.otf);
+  url(/fonts/HeroLight.otf);
 }
 @font-face {
   font-family: Hero;
   src: local("Hero"),
   local("Hero"),
-  url(fonts/Hero.otf);
+  url(/fonts/Hero.otf);
 }
 
 /* ------- index.html ------- */
