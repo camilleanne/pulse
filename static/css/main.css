@@ -243,7 +243,7 @@ a:hover {
   top: 140px;
   width: 600px;
   height: 300px;
-  z-index: 10001;
+  z-index: 101;
 
 }
 
@@ -253,6 +253,7 @@ a:hover {
   top: 100px;
   width: 150px;
   padding: 20px;
+  z-index: 1001;
 
 }
 
