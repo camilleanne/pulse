@@ -2,6 +2,8 @@ Pulse
 ===========
 
 Pulse is a browser-based, non-contact heartrate detection application. It can derive a heartrate in thirty seconds or less, requiring only a browser and a webcam. Based on recent research in photoplethysmography and signal processing, the heartbeat is derived from minuscule changes in pixels over time.
+
+[Play with Pulse online!](http://pulsation.herokuapp.com) (only in Chrome)
  
 Pulse is based on techniques outlined in ["Non-contact, automated cardiac pulse measurements using video imaging and blind source separation"](http://www.opticsinfobase.org/oe/abstract.cfm?uri=oe-18-10-10762) by Poh, et al (2010) and work by @thearn with OpenCV and Python ([webcam-pulse-detector](https://github.com/thearn/webcam-pulse-detector)).
 
