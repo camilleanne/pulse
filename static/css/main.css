@@ -5,7 +5,7 @@ body{
 }
 
 @font-face {
-  font-family: BlurBold;
+  font-family: "BlurBold";
   src: local("BlurBold"),
   local("Blur Bold"),
   url(/fonts/BlurBold.otf);
@@ -13,7 +13,7 @@ body{
 }
 
 @font-face {
-  font-family: BlurMedium;
+  font-family: "BlurMedium";
   src: local("BlurMedium"),
   local("Blur Medium"),
   url(/fonts/BlurMedium.otf);
@@ -26,7 +26,7 @@ body{
   url(/fonts/HeroLight.otf);
 }
 @font-face {
-  font-family: Hero;
+  font-family: "Hero";
   src: local("Hero"),
   local("Hero"),
   url(/fonts/Hero.otf);
@@ -210,7 +210,7 @@ h1 {
 }
 
 h2 {
-  font-family: "hero light";
+  font-family: "Hero light";
   font-size: 2.3em;
   color: #0E0C09;
   letter-spacing: .05em;
@@ -233,9 +233,17 @@ a:hover {
 
 }
 
+#transparentPulse{
+
+
+}
+
 #overlay {
   position: absolute;
   top: 150px;
+/*    font-family: 'BlurBold', 'Chango', sans-serif;
+  font-weight: bold;
+  font-size: 210px;*/
 }
 
 .begin {
@@ -376,7 +384,7 @@ borrowed with love from: http://www.justinaguilar.com/animations/
 }
 
 h3 {
-  font-family: "hero light";
+  font-family: "Hero light";
   font-size: 2.3em;
   /*color: #0E0C09;*/
   color: #3E3D45;
@@ -413,7 +421,7 @@ h3 {
 }
 
 .bold {
-  font-family: 'hero';
+  font-family: 'Hero';
 }
 
 .blurFont {

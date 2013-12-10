@@ -80,7 +80,8 @@
 		// displayGraph() is a previous iteration of an 
 		// animated graph to display under the logo
 		var ctx = document.getElementById("overlay").getContext("2d");
-		ctx.font = "Normal 210px 'BlurBold'";
+		ctx.id = "transparentPulse"
+		ctx.font = "Normal 210px 'Chango'";
 		ctx.fillStyle = "#E1F1F1"; 
 		ctx.fillRect(0,0,600,300); 
 		ctx.globalCompositeOperation = "destination-out"; 
