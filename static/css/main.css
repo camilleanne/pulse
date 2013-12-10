@@ -202,7 +202,7 @@ path {
 /* ## SPLASH PAGE ## */
 
 h1 {
-  font-family: "BlurBold", Chango, sans-serif;
+  font-family: "BlurBold", "Chango", sans-serif;
   font-weight: normal;
   font-size: 13em;
   color: #8FA1A3;
@@ -234,16 +234,17 @@ a:hover {
 }
 
 #transparentPulse{
-
+  z-index: 10001;
 
 }
 
 #overlay {
   position: absolute;
-  top: 150px;
-/*    font-family: 'BlurBold', 'Chango', sans-serif;
-  font-weight: bold;
-  font-size: 210px;*/
+  top: 140px;
+  width: 600px;
+  height: 300px;
+  z-index: 10001;
+
 }
 
 .begin {
@@ -425,5 +426,5 @@ h3 {
 }
 
 .blurFont {
-  font-family: "BlurMedium", Chango, sans-serif;
+  font-family: "BlurMedium", "Chango", sans-serif;
 }

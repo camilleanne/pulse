@@ -1,7 +1,8 @@
 {% extends "master.html" %}
 {% block body %}
 		<div id="container">
-			<canvas id="overlay" width="600" height="300"></canvas>
+			<img id="overlay" src="/static/images/transparentPulse.png">
+
 			<div id="graph"><svg></svg></div>
 			<h2 class="begin"><a href="#" class="begin" id="beginButton"> begin </a></h2>
 		
@@ -79,13 +80,17 @@
 		// visualization in the shape of the pulse logo
 		// displayGraph() is a previous iteration of an 
 		// animated graph to display under the logo
-		var ctx = document.getElementById("overlay").getContext("2d");
-		ctx.id = "transparentPulse"
-		ctx.font = "Normal 210px 'Chango'";
-		ctx.fillStyle = "#E1F1F1"; 
-		ctx.fillRect(0,0,600,300); 
-		ctx.globalCompositeOperation = "destination-out"; 
-		ctx.fillText("pulse", 20, 210);
+
+		
+		//** Currently commented out and replaced with PNG until fonts are sorted**
+		
+		// var ctx = document.getElementById("overlay").getContext("2d");
+		// ctx.id = "transparentPulse"
+		// ctx.font = "Normal 210px 'Chango', 'sans-serif' ";
+		// ctx.fillStyle = "#E1F1F1"; 
+		// ctx.fillRect(0,0,600,300); 
+		// ctx.globalCompositeOperation = "destination-out"; 
+		// ctx.fillText("pulse", 20, 210);
 
 		// displayGraph("#graph", 600, 200, 1000, 990)
 
