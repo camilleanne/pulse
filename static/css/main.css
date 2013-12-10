@@ -240,7 +240,7 @@ a:hover {
 
 #overlay {
   position: absolute;
-  top: 140px;
+  top: 150px;
   width: 600px;
   height: 300px;
   z-index: 101;
