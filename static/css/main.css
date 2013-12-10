@@ -4,6 +4,34 @@ body{
   background-color: #E1F1F1;
 }
 
+@font-face {
+  font-family: BlurBold;
+  src: local("BlurBold"),
+  local("Blur Bold"),
+  url(fonts/BlurBold.otf);
+  /*font-weight: bold;*/
+}
+
+@font-face {
+  font-family: BlurMedium;
+  src: local("BlurMedium"),
+  local("Blur Medium"),
+  url(fonts/BlurMedium.otf);
+}
+
+@font-face {
+  font-family: "Hero Light";
+  src: local("Hero Light"),
+  local("HeroLight"),
+  url(fonts/HeroLight.otf);
+}
+@font-face {
+  font-family: Hero;
+  src: local("Hero"),
+  local("Hero"),
+  url(fonts/Hero.otf);
+}
+
 /* ------- index.html ------- */
 /* ## VIDEO ## */
 
@@ -42,10 +70,10 @@ body{
 
 .blur {
   filter: blur(10px);
-/*  -webkit-filter: blur(10px);
+  -webkit-filter: blur(10px);
   -o-filter: blur(10px); 
   -ms-filter: blur(10px);
-  -moz-filter: blur(10px);*/
+  -moz-filter: blur(10px);
   filter: url(blur.xml#blurred);
 }
 
