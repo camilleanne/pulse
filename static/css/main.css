@@ -20,6 +20,8 @@ body{
 #canvas {
   position: relative; 
   display: inline-block;
+  width: 380px;
+  height: 285px;
 }
 
 .center {
@@ -38,9 +40,13 @@ body{
   display: block;
 }
 
-.blur{
+.blur {
   filter: blur(10px);
-  -webkit-filter: blur(10px);
+/*  -webkit-filter: blur(10px);
+  -o-filter: blur(10px); 
+  -ms-filter: blur(10px);
+  -moz-filter: blur(10px);*/
+  filter: url(blur.xml#blurred);
 }
 
 .border{
