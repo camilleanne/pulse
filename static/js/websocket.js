@@ -1,4 +1,4 @@
-var dataSocket = new WebSocket("ws:127.0.0.1:8000/echo");
+var dataSocket = new WebSocket("ws://"+ location.host + "/receive");
 
 dataSocket.onopen = function(){
 	console.log("websocket open!");
