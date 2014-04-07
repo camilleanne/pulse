@@ -1,4 +1,4 @@
-import ct_jade
+import jade
 import numpy as np
 import json
 
@@ -13,7 +13,7 @@ def parse_RGB(message):
 	# ** FOR RGB CHANNELS & ICA **
 	X = np.ndarray(shape = (3, buffer_window), buffer= np.array(message["array"]))
 	X = normalize_matrix(X)
-	ICA = ct_jade.main(X)
+	ICA = jade.main(X)
 	return json.dumps(parse_ICA_results(ICA, buffer_window)) #message["time"]
 
 
