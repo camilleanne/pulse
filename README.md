@@ -72,7 +72,7 @@ The meat of the program is here. It intitializes camera, canvas, and headtrackin
 Some functions for signal processing and math used by (camera.js).
 
 ####(model.py)
-Data is normalized, run through ICA (ct_jade.py) and FFT and filtered by the power density ratio.
+Data is normalized, run through ICA (jade.py) and FFT and filtered by the power density ratio.
 
 
 ![Pulse](https://raw.github.com/camilleanne/biofeedback/master/resources/screenshot_info3.png)

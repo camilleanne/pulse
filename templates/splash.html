@@ -128,20 +128,18 @@
 					 .ease("linear")
 					 .duration(transitionDelay)
 					 .attr("transform", "translate(" + x(0) + ")");
-			
 			}
 			
 			function shiftArray(array){
 				var v = array.shift(); 
 				array.push(v); 
-
 			}
 
 			setInterval(function() {
 				data.forEach(shiftArray);
 				redrawWithAnimation();
 				}, updateDelay);
-		 }
+		}
 
 
 		/* ## Sine Wave ##
