@@ -10,9 +10,34 @@ Pulse is based on techniques outlined in ["Non-contact, automated cardiac pulse 
 Pulse works because changes in blood volume in the face during the cardiac cycle modify the amount of ambient light reflected by the blood vessels. This change in brightness can be picked up as a periodic signal by a webcam. It is most prominent in the green channel, but using independent component analysis (ICA), an even more prominent signal can be extracted from a combination of the red, blue, and green channels.
 
 The process blog for this project is here: [Camille Codes](http://camillecodes.tumblr.com)
+
 Click through for more detailed explanations of the process and technology.
 
 ![Pulse](https://raw.github.com/camilleanne/biofeedback/master/resources/screenshot_splash.png)
+
+### Usage
+
+#### Installation
+recommended to use a virtual environment. If that's not your style-- the dependencies are in `requirements.txt`
+
+```
+virtualenv env
+pip install -r requirements.txt
+```
+
+I had some issues with NumPy installing most recently on OSX 10.9, suppressing clang errors helped:
+
+```
+export CFLAGS=-Qunused-arguments
+export CPPFLAGS=-Qunused-arguments
+```
+
+#### Run
+```
+./deploy.sh
+```
+
+Pulse will be running at `http://localhost:8000`
 
 ### Technology
 
