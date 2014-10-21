@@ -22,6 +22,7 @@ recommended to use a virtual environment. If that's not your style-- the depende
 
 ```
 virtualenv env
+source ./env/bin/activate
 pip install -r requirements.txt
 ```
 
