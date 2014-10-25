@@ -5,26 +5,16 @@ import json
 def parse_RGB(message):
 	buffer_window = message["bufferWindow"]
 
-	# # ** FOR GREEN CHANNEL ONLY **
-	# X = np.array(message["array"])
-	# X = normalize_array(X)
-	# return json.dumps(parse_ICA_results(X, buffer_window))
-
-	# ** FOR RGB CHANNELS & ICA **
 	X = np.ndarray(shape = (3, buffer_window), buffer= np.array(message["array"]))
 	X = normalize_matrix(X)
 	ICA = jade.main(X)
 	return json.dumps(parse_ICA_results(ICA, buffer_window)) #message["time"]
-
-
-	
 
 def parse_ICA_results(ICA, buffer_window): #time
 	signals = {}
 	signals["id"] = "ICA"
 	signals["bufferWindow"] = buffer_window
 
-	# ** FOR RGB CHANNELS & ICA **
 	one = np.squeeze(np.asarray(ICA[:, 0])).tolist()
 	two = np.squeeze(np.asarray(ICA[:, 1])).tolist()
 	three = np.squeeze(np.asarray(ICA[:, 2])).tolist()
@@ -56,15 +46,6 @@ def parse_ICA_results(ICA, buffer_window): #time
 	# print power_ratio
 	# print signals
 	return signals
-
-	# # ** FOR GREEN CHANNEL ONLY **
-	# hamming = (np.hamming(len(ICA)) * ICA)
-	# fft = np.fft.rfft(hamming)
-	# fft = np.absolute(np.square(fft))
-	# signals["array"] = fft.astype(float).tolist()
-
-	# return signals
-
 
 	# ** experiments **
 	# ** for interpolation and hamming **

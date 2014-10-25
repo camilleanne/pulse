@@ -131,19 +131,6 @@ var camera = (function(){
       
       // ** turn green ** 
       for (i = 0; i < forehead.data.length; i+=4){
-        // ** for reference: ** 
-        // var red = forehead.data[i];
-        // var green = forehead.data[i+1];
-        // var blue = forehead.data[i+2];
-        // var alpha = forehead.data[i+3];
-
-        //  ** for debugging: puts a green video image on screen ** 
-        // forehead.data[i] = 0;
-        // forehead.data[i + 1] = forehead.data[i]
-        // forehead.data[i + 2] = 0;
-
-        // ** get sum of green area for each frame **
-        // ** FOR RGB CHANNELS & ICA **
         redSum = forehead.data[i] + redSum;
         greenSum = forehead.data[i+1] + greenSum;
         blueSum = forehead.data[i+2] + blueSum;
@@ -156,33 +143,12 @@ var camera = (function(){
           blur = true;
           minimizeVideo();
         }
-
-        // // ** TOGGLE FOR GREEN CHANNEL ONLY **
-        // greenSum = forehead.data[i+1] + greenSum;
       };
 
-      // ** get average of green area for each frame **
-
-      // ** FOR RGB CHANNELS & ICA **
       var redAverage = redSum/(forehead.data.length/4);
       var greenAverage = greenSum/(forehead.data.length/4);
       var blueAverage = blueSum/(forehead.data.length/4);
 
-      // //  ** TOGGLE FOR GREEN CHANNEL ONLY **
-      // var greenAverage = greenSum/(forehead.data.length/4);
-
-      // //  ** TOGGLE FOR GREEN CHANNEL ONLY **
-      // if (green.length < bufferWindow){
-      //     green.push(greenAverage);
-      //   if (green.length > bufferWindow/8){
-      //       sendingData = true;
-      //   }
-      // } else {
-      //   green.push(greenAverage);
-      //   green.shift();
-      // }
-
-      // ** FOR RGB CHANNELS & ICA **
       if (green.length < bufferWindow){
           red.push(redAverage);
           green.push(greenAverage);
@@ -226,27 +192,11 @@ var camera = (function(){
 
 
   function cardiac(array, bfwindow){
-    // ** if using Green Channel, you can normalize data in the browser: ** 
-    // var normalized = normalize(array);
-    // var normalized = array;
-
-    // // ** fast fourier transform from dsp.js **
-    // // ** if using green channel, you can run fft in the browser: **
-    // var fft = new RFFT(bfwindow, fps);
-    // fft.forward(normalized);
-    // spectrum = fft.spectrum;
-
-    // ** if FFT is done on server, set spectrum to that array **
     spectrum = array;
 
     var freqs = frequencyExtract(spectrum, fps);
     var freq = freqs.freq_in_hertz;
     heartrate = freq * 60;
-    
-    // //** TOGGLE FOR GREEN CHANNEL ONLY **
-    // graphData = {one: green[green.length-1]}
-    // graph.series.addData(graphData);
-    // graph.render();
 
     showConfidenceGraph(freqs, 600, 100);
     heartbeatCircle(heartrate);
@@ -346,11 +296,6 @@ var camera = (function(){
 
     // ** send data via websocket to the python server ** 
     dataSend = setInterval(function(){
-      // //  ** TOGGLE FOR GREEN CHANNEL ONLY **
-      // if (sendingData){
-      //   sendData(JSON.stringify({"array": green, "bufferWindow": green.length}));
-      // }
-      // ** FOR RGB CHANNELS & ICA **
       if (sendingData){
         sendData(JSON.stringify({"array": [red, green, blue], "bufferWindow": green.length}));
       }
