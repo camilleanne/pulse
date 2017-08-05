@@ -1,3 +1,6 @@
+### NOTE: This project is no longer maintained -- it was a code school project from several years ago. As of 7/2017 I am on a one year travel haitus and am slowly (while on trains planes and in automobiles) dragging this project into a frontend and node backend module that can be applied to any project your heart desires. I will ignore any tickets opened on *this* repo, but feel free to fork (keep the license in mind, please) and have a good time with this for now.
+
+
 Pulse
 ===========
 
