@@ -69,20 +69,20 @@ The graph on the left of the screen (built with Rickshaw) is the raw feed of dat
 The graph on the right (build with D3) titled "Confidence in frequency in BPM" is the result of the FFT function (confidence) graphed against the frequency bins represented in that result (frequency). The higher the peak, the more likely the heartbeat is at that frequency. In the graph you can see periodic noise, but also a very satisfying "settling" as the program finds a heartrate and stays there.
 
 ### Structure
-####(camera.js)
+#### (camera.js)
 The meat of the program is here. It intitializes camera, canvas, and headtracking and extracts the RGB channels from the ROI. It averages them and sends them to the Python server, and when the data is returned to the browser, it uses functions from (mathmatical.js) to filter and extract frequencies. It also initializes and times the graphing of the final data.
 
-####(mathmatical.js)
+#### (mathmatical.js)
 Some functions for signal processing and math used by (camera.js).
 
-####(model.py)
+#### (model.py)
 Data is normalized, run through ICA (jade.py) and FFT and filtered by the power density ratio.
 
 
 ![Pulse](https://raw.github.com/camilleanne/biofeedback/master/resources/screenshot_info3.png)
 
 
-####Pulse is supported by:
+#### Pulse is supported by:
 
 [Headtrackr.js](https://github.com/auduno/headtrackr/) is currently doing the heavy lifting for the facetracking.
 
