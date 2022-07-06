@@ -1,0 +1,271 @@
+{% extends "master.html" %}
+{% block body %}
+		<div id="container">
+			<img id="overlay" src="/static/images/transparentPulse.png">
+
+			<div id="graph"><svg></svg></div>
+			<h2 class="begin"><a href="#" class="begin" id="beginButton"> begin </a></h2>
+		
+		<div id="introduction">
+			<a href="#" id="next">NEXT</a>
+			<a href="{{url_for('get_heartrate')}}" id="skip">(SKIP)</a>
+
+		</div>
+		</div>
+
+
+	<script type="text/javascript">
+		// ** INSTRUCTIONS FOR APP **
+		// When begin is clicked, this displays a div 
+		// where the user can click through some basic
+		// tips and instructions
+
+		var begin = document.getElementById("beginButton");
+		var div = document.getElementById("introduction");
+		begin.addEventListener("click", showInstructions);
+
+		var instruct = document.createElement("h3");
+		instruct.className = "instruct";
+
+		var instructions = ["<span class='bold'>Welcome to <span class='blurFont'>pulse</span>!</span> <br><br><span class='blurFont'>pulse</span> derives your heartrate from your webcam. It is able to do this because there are subtle differences in the light reflected off of your skin when blood pumps beneath it.<br><br> Here are some tips for best results.", "<span class='num'>1</span> <br><br>Sit centered to the camera and avoid backlighting. <br><br><span class='blurFont'>pulse</span> uses a headtracking algorithm and will keep collecting data if you move around, but leaving the frame or showing <span class='blurFont'>pulse</span> too much of a profile will cause it some confusion.", "<span class='num'>2</span><br><br> <span class='blurFont'>pulse</span> collects data from the center of your forehead, so pull back any hair that could be covering that area.","<span class='num'>3</span><br><br> It takes <span class='blurFont'>pulse</span> about 10 seconds to gather enough data to start, so be patient. <br><br><span class='blurFont'>pulse</span> is most accurate after 30 seconds, so use this time to take a few deep breaths!", "<span class='num'>4</span><br><br> The video will be blurred so you don't get distracted, but you can refocus it if you feel like it (you vain thing, you).", "<span class='num'>5</span> <br><br>Want to learn more about the science behind <span class='blurFont'>pulse</span>? <br><br>Check it out on <a href='http://github.com/camilleanne/biofeedback' target='_blank' class='bold' id='github'>github</a>!", "Relax!"];
+		
+		var otherBrowsers = ["<span class='bold'>Welcome to <span class='blurFont'>pulse</span>!</span> <br><br><span class='blurFont'>pulse</span> works best in <a href='https://www.google.com/intl/en/chrome/browser/'>Google's Chrome</a> browser. Since you're viewing <span class='blurFont'>pulse</span> in another browser, it may not work. Please reload in Chrome."]
+
+		var next = document.getElementById("next");
+		var skip = document.getElementById("skip");
+
+		var index = 0;
+
+		/*checks for Chrome and doesn't allow user to proceed if browser isn't Chrome
+		var isChrome = window.navigator.userAgent.match("Chrome");
+		var isFirefox = window.navigator.userAgent.match("Firefox");
+
+		if (!isChrome){
+			instruct.innerHTML = otherBrowsers[0];
+			div.insertBefore(instruct, div.firstChild);
+			if (isFirefox){
+				// add later
+			}
+			skip.style.display = "none";
+			next.style.display = "none";
+			// console.log("not Chrome")
+		} else {
+			instruct.innerHTML = instructions[index];
+			instruct.setAttribute("id", index);
+			div.insertBefore(instruct, div.firstChild);
+			// console.log("Chrome")
+		}
+		*/
+		next.addEventListener("click", function(){
+			index++
+			instruct.innerHTML= instructions[index];
+			instruct.setAttribute("id", index);
+			if (index > instructions.length-2){
+				next.innerHTML = "Begin!"
+				next.href = "{{url_for('get_heartrate')}}"
+			}
+			
+
+		});
+
+		function showInstructions(){
+			div.style.display = "block";
+			begin.style.display = "none";
+		};
+
+	</script>
+	<script>
+		// ** LOGO and ANIMATION **
+		// Creates a canvas overlay for the sine wave
+		// visualization in the shape of the pulse logo
+		// displayGraph() is a previous iteration of an 
+		// animated graph to display under the logo
+
+		
+		//** Currently commented out and replaced with PNG until fonts are sorted**
+		
+		// var ctx = document.getElementById("overlay").getContext("2d");
+		// ctx.id = "transparentPulse"
+		// ctx.font = "Normal 210px 'Chango', 'sans-serif' ";
+		// ctx.fillStyle = "#E1F1F1"; 
+		// ctx.fillRect(0,0,600,300); 
+		// ctx.globalCompositeOperation = "destination-out"; 
+		// ctx.fillText("pulse", 20, 210);
+
+		// displayGraph("#graph", 600, 200, 1000, 990)
+
+		function displayGraph(id, width, height, updateDelay, transitionDelay) {
+			var data = [[2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2, 2, 2.5, 3, 2],[2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3, 2, 3, 4, 3],[3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4, 3, 4, 5, 4],[4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5, 4, 5, 6, 5],[5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6, 5, 6, 7, 6],[6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7, 6, 7, 8, 7]]
+
+			var graph = d3.select(id).append("svg:svg").attr("width", "100%").attr("height", "100%");
+
+			var x = d3.scale.linear().domain([0, 100]).range([-5, width]);
+			var y = d3.scale.linear().range([0, height]);
+			
+			y.domain([
+			    d3.min(data, function(c) { return d3.min(c); }),
+			    d3.max(data, function(c) { return d3.max(c); })
+			]);
+
+			var line = d3.svg.line()
+							.x(function(d,i) { 
+								return x(i); 
+							})
+							.y(function(d) { 
+								return y(d); 
+							})
+							.interpolate("basis");
+			var lines = graph.selectAll(".lines").data(data).enter().append("g").attr("class", "lines");
+
+			lines.append("svg:path").attr("class", "line").attr("d", function(d) { return line(d); });
+
+			function redrawWithAnimation(){
+				graph.selectAll("path")
+					 .data(data)
+					 .attr("transform", "translate("+x(1) + ")")
+					 .attr("d", line)
+					 .transition()
+					 .ease("linear")
+					 .duration(transitionDelay)
+					 .attr("transform", "translate(" + x(0) + ")");
+			}
+			
+			function shiftArray(array){
+				var v = array.shift(); 
+				array.push(v); 
+			}
+
+			setInterval(function() {
+				data.forEach(shiftArray);
+				redrawWithAnimation();
+				}, updateDelay);
+		}
+
+
+		/* ## Sine Wave ##
+			code from: http://bl.ocks.org/enjalot/1457934
+			with minor modifications to remove jwerty
+		*/
+		var w = 600,
+		h = 210,
+		start = Date.now();
+
+		var rings = [ ];
+		var lines = [ ];
+
+		var n = 20;
+		var m = 60;
+
+		for (i in d3.range(n)){
+		    if(i < 3)
+		        var speed = (i-3) * 1e-2;
+		    else
+		        var speed = (i-2) * 1e-2;
+		    var speed = .001 * i * 4;
+
+		    var data = d3.range(m) 
+		    lines.push({ 
+		        width: 1.5, 
+		        height: 4,
+		        speed: speed,
+		        index: i,
+		        data: data
+		    })
+		}
+
+		var xscale = d3.scale.linear()
+		    .domain([0,m])
+		    .range([0, w])
+
+		var omega = -.22
+		function line_maker( data, speed )
+		{
+		    var freq = Math.PI*.4 + 3 * omega * data.index // * 3000
+		    var svgline = d3.svg.line()
+		    .x(function(d,i)
+		    {
+		        return xscale(d);
+		    })
+		    .y(function(d,i)
+		    {
+		        var theta = freq * d/m * Math.PI * 4 
+		        var y = data.height * (Math.sin(theta + (n-data.index) * .1 * speed * .05 ));
+		        return y
+		    })
+		    .interpolate("basis")
+		    return svgline(data.data);
+		}
+
+		var spacing = 10;
+		function lineEnter(d, i) {
+		  d3.select(this).selectAll("path.path")
+		      .data([d])
+		      .enter()
+		    .append("svg:path")
+		      .attr("class", "path waveform")
+		    .attr("d", function(d,i) {
+		              return line_maker( d, 0 ) 
+		            }
+		        )
+		      .attr("stroke-width", function(e,i) { return e.width;})
+		      .attr("stroke", "#fff")
+		      .attr("fill", "none");
+
+		    update_spacing()
+		}
+
+		var svg = d3.select("svg")
+		    .attr("width", w)
+		    .attr("height", h)
+		  .append("svg:g")
+
+		var line = svg.selectAll("g.line")
+		    .data(lines)
+		  .enter().append("svg:g")
+		    .attr("class", "line")
+		    .attr("stroke", "#DACCA7")
+		    .each(lineEnter);
+
+		var sm = .39 
+		function update_spacing()
+		{
+		    var th = spacing * n;
+		    var hscale = d3.scale.linear()
+		        .domain([0, n])
+		        .range([0, h])
+
+		    // console.log("spacing", spacing)
+		    d3.selectAll("g.line path")
+		        .attr("transform", function(d, i) { 
+		            return "translate(" + [0, h/2 + th / 2 - spacing * d.index] + ")"; 
+		        })
+		}
+
+		var color = d3.scale.linear()
+		    .domain([-1, 1])
+		    .interpolate(d3.interpolateRgb)
+		    .range(["#fff", "#000"])
+
+		var opacity = d3.scale.linear()
+		    .domain([0, n])
+		    .range([1, .4])
+
+		b = 1;
+		d3.timer(function() {
+		  var elapsed = Date.now() - start
+		  var damp = .3
+
+		  rotate = function(d,i) { 
+		  var speed = sm * d.speed * elapsed * .1
+		    return "rotate(" + speed + ")"; 
+		  };
+
+		  line = d3.selectAll("g.line path")
+		      .attr("d", function(d,i) {
+		             var speed = sm * .08 * elapsed + d.index * 4 
+		             return line_maker( d, speed ) 
+		        })
+		      .attr("stroke-opacity", function(d,i) { return opacity(d.index);})    
+		});
+	</script>
+{% endblock %}
