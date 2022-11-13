@@ -36,7 +36,7 @@
 
 		var index = 0;
 
-		/*checks for Chrome and doesn't allow user to proceed if browser isn't Chrome
+		checks for Chrome and doesn't allow user to proceed if browser isn't Chrome
 		var isChrome = window.navigator.userAgent.match("Chrome");
 		var isFirefox = window.navigator.userAgent.match("Firefox");
 
@@ -55,7 +55,7 @@
 			div.insertBefore(instruct, div.firstChild);
 			// console.log("Chrome")
 		}
-		*/
+		
 		next.addEventListener("click", function(){
 			index++
 			instruct.innerHTML= instructions[index];
