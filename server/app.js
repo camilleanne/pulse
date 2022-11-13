@@ -19,8 +19,8 @@ app.get('/', function(req, res) {
 app.get('/begin', function(req, res) {
       res.sendFile(path.join(__dirname, '../public/index.html'));
     });
-/*
+
 app.use('/index', indexRouter);
 app.use('/splash', splashRouter);
-*/
+
 export default app;
