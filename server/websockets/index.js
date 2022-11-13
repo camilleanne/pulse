@@ -1,12 +1,11 @@
 import {WebSocket, WebSocketServer} from 'ws';
 import queryString from 'query-string';
 import {PythonShell} from 'python-shell';
-var pyFile = './model.py'
-var pyScriptPath = 'F:/pulse4/pulse-node-express/py/';
-var pyVersionPath = 'C:\\Python310\\python';
+var pyFile = '/model.py'
+var pyScriptPath = '././py/';
 var pyMode = 'json';
 var pyArgs = [];
-var options = { mode: pyMode, pythonPath: pyVersionPath, scriptPath: pyScriptPath, args: pyArgs,pythonOptions: ['-u']};
+var options = { mode: pyMode, scriptPath: pyScriptPath, args: pyArgs,pythonOptions: ['-u']};
 let pyshell = new PythonShell("script.py",options);
 
 export default async (expressServer) => {
